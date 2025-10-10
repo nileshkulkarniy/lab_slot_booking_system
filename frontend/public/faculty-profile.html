@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty Profile</title>
+  <link rel="stylesheet" href="faculty-profile.css" />
+</head>
+<body>
+  <!-- Floating Lab Icons -->
+  <div class="lab-icons">
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+  </div>
+
+  <div class="container">
+    <div class="profile-header">
+      <h1>My Profile</h1>
+      <p class="subtitle">Manage your personal information and account settings</p>
+    </div>
+
+    <div class="profile-picture-section">
+      <div class="profile-picture-container">
+        <div class="profile-picture-placeholder">
+          <span>👤</span>
+        </div>
+        <div class="upload-overlay">
+          <span>📷</span>
+        </div>
+      </div>
+      <p class="upload-hint">Click to upload profile picture</p>
+    </div>
+
+    <form id="profileForm" class="profile-form">
+      <div class="form-section">
+        <h2>Personal Information</h2>
+        <div class="form-group">
+          <label for="name">Full Name</label>
+          <input type="text" id="name" name="name" placeholder="Enter your full name" required />
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" name="email" placeholder="Enter your email address" required />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="updateBtn">Update Profile</button>
+        <button type="button" onclick="window.location.href='faculty-dashboard.html'" class="cancel-btn">← Back to Dashboard</button>
+      </div>
+    </form>
+
+    <form id="passwordForm" class="password-form">
+      <div class="form-section">
+        <h2>Change Password</h2>
+        <div class="form-group">
+          <label for="currentPassword">Current Password</label>
+          <input type="password" id="currentPassword" name="currentPassword" placeholder="Enter current password" required />
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">New Password</label>
+          <input type="password" id="newPassword" name="newPassword" placeholder="Enter new password" required minlength="6" />
+          <div class="password-hint">Must be at least 6 characters long</div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirm New Password</label>
+          <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm new password" />
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button type="submit" id="changePasswordBtn">Change Password</button>
+      </div>
+    </form>
+
+    <div id="message" class="message" style="display: none;"></div>
+  </div>
+
+  <script>
+    // Debug form submission
+    document.addEventListener('DOMContentLoaded', function() {
+      const profileForm = document.getElementById('profileForm');
+      if (profileForm) {
+        profileForm.addEventListener('submit', function(e) {
+          console.log('Form submit event triggered');
+        });
+      }
+    });
+  </script>
+  <script src="js/faculty-profile.js"></script>
+</body>
+</html>

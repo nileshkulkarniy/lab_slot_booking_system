@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Users</title>
+  <link rel="stylesheet" href="manage-users.css" />
+</head>
+<body>
+  <!-- Floating User Icons -->
+  <div class="user-icons">
+    <div class="user-icon"></div>
+    <div class="user-icon"></div>
+    <div class="user-icon"></div>
+  </div>
+
+  <div class="container">
+    <h1>Manage Users</h1>
+
+    <!-- Search and Filter Section -->
+    <div class="search-container">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search users by name or email..." />
+      <select id="roleFilter" class="search-input">
+        <option value="">All Roles</option>
+        <option value="faculty">Faculties</option>
+        <option value="admin">Admins</option>
+      </select>
+      <button id="searchBtn" class="edit-btn">Search</button>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody">
+          <tr>
+            <td colspan="5">Loading users...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <button onclick="window.location.href='admin-dashboard.html'" class="back-btn">← Back to Dashboard</button>
+  </div>
+
+  <script src="js/manage-users.js"></script>
+</body>
+</html>

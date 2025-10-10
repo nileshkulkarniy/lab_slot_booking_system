@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin-dashboard.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Admin</h2>
+    <ul>
+      <li><a href="admin-dashboard.html">Dashboard</a></li>
+      <li><a href="manage-labs.html">Manage Labs</a></li>
+      <li><a href="manage-slots.html">Manage Slots</a></li>
+      <li><a href="view-bookings.html">View Bookings</a></li>
+      <li><a href="manage-users.html">Manage Users</a></li>
+      <li><a href="admin-reports.html">Reports</a></li>
+      <li><a href="admin-login.html">Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="header">
+      <h1>Welcome, Admin</h1>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Total Labs</h3>
+        <p>0</p>
+      </div>
+      <div class="card">
+        <h3>Booked Slots</h3>
+        <p>0</p>
+      </div>
+      <div class="card">
+        <h3>Active Faculty</h3>
+        <p>0</p>
+      </div>
+      <div class="card">
+        <h3>Reports Exported</h3>
+        <p>0</p>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>Recent Bookings</h2>
+      <!-- Date filter elements -->
+      <div class="booking-filters">
+        <div class="filter-group">
+          <label for="dateFrom">From Date:</label>
+          <input type="date" id="dateFrom" class="filter-input">
+        </div>
+        <div class="filter-group">
+          <label for="dateTo">To Date:</label>
+          <input type="date" id="dateTo" class="filter-input">
+        </div>
+        <button id="applyDateFilter" class="filter-btn">Apply Filter</button>
+        <button id="clearDateFilter" class="filter-btn clear-btn">Clear</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Name from Faculty</th>
+            <th>Faculty</th>
+            <th>Lab Number</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Recent bookings will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Marquee Footer -->
+  <div class="marquee-footer">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+    1st Cross, 1st Stage, Peenya, Bengaluru 560058, Karnataka, INDIA.   &copy; AIMS Institutes 2025 
+    </marquee>
+  </div>
+
+  <script>
+    function logout() {
+      localStorage.removeItem('token');
+      window.location.href = '/admin-login.html';
+    }
+  </script>
+  <script src="js/admin-dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Bookings</title>
+  <link rel="stylesheet" href="my-bookings.css">
+</head>
+<body>
+  <!-- Floating Booking Icons -->
+  <div class="booking-icons">
+    <div class="booking-icon"></div>
+    <div class="booking-icon"></div>
+    <div class="booking-icon"></div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1>My Bookings</h1>
+      <p>View and manage your lab slot reservations</p>
+    </div>
+
+    <div class="filters">
+      <div class="filter-group">
+        <label for="statusFilter">Status:</label>
+        <select id="statusFilter">
+          <option value="all">All Status</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="dateFrom">From:</label>
+        <input type="date" id="dateFrom">
+      </div>
+      
+      <div class="filter-group">
+        <label for="dateTo">To:</label>
+        <input type="date" id="dateTo">
+      </div>
+      
+      <div class="filter-actions">
+        <button id="applyFilters" class="filter-btn">Apply Filters</button>
+        <button id="clearFilters" class="filter-btn clear-btn">Clear</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Lab Number</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="bookingTable">
+          <!-- Bookings will be dynamically loaded here -->
+          <tr>
+            <td colspan="6" class="empty-state">
+              <div class="empty-content">
+                <div class="empty-icon">📅</div>
+                <h3>No Bookings Found</h3>
+                <p>You haven't made any lab slot bookings yet.</p>
+                <a href="Available-labs-faculty.html" class="btn-primary">Book a Slot</a>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button id="prevPage" class="page-btn" disabled>Previous</button>
+      <span id="pageInfo" class="page-info">Page 1 of 1</span>
+      <button id="nextPage" class="page-btn" disabled>Next</button>
+    </div>
+
+    <a href="faculty-dashboard.html" class="back-btn">Back to Dashboard</a>
+  </div>
+
+  <script src="js/my-bookings.js"></script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <defs>
+    <linearGradient id="heroGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#00f2fe;stop-opacity:0.1" />
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.9" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:0.9" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="300" fill="url(#heroGrad)"/>
+  
+  <!-- Floating Cards -->
+  <g transform="translate(50, 50)">
+    <!-- Lab Card -->
+    <rect x="0" y="0" width="80" height="60" rx="8" fill="url(#cardGrad)" stroke="#667eea" stroke-width="1" opacity="0.8"/>
+    <text x="40" y="20" text-anchor="middle" fill="#667eea" font-size="10" font-weight="bold">Lab 1</text>
+    <text x="40" y="35" text-anchor="middle" fill="#43e97b" font-size="8">Available</text>
+    <rect x="10" y="42" width="60" height="4" rx="2" fill="#43e97b" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(200, 80)">
+    <!-- Booking Card -->
+    <rect x="0" y="0" width="80" height="60" rx="8" fill="url(#cardGrad)" stroke="#764ba2" stroke-width="1" opacity="0.8"/>
+    <text x="40" y="20" text-anchor="middle" fill="#764ba2" font-size="10" font-weight="bold">My Booking</text>
+    <text x="40" y="35" text-anchor="middle" fill="#ffa726" font-size="8">Confirmed</text>
+    <rect x="10" y="42" width="60" height="4" rx="2" fill="#ffa726" opacity="0.6"/>
+  </g>
+  
+  <g transform="translate(100, 180)">
+    <!-- Statistics Card -->
+    <rect x="0" y="0" width="80" height="60" rx="8" fill="url(#cardGrad)" stroke="#43e97b" stroke-width="1" opacity="0.8"/>
+    <text x="40" y="20" text-anchor="middle" fill="#43e97b" font-size="10" font-weight="bold">Stats</text>
+    <text x="40" y="35" text-anchor="middle" fill="#667eea" font-size="12" font-weight="bold">5</text>
+    <text x="40" y="48" text-anchor="middle" fill="#6b7280" font-size="7">Bookings</text>
+  </g>
+  
+  <!-- Connection Lines -->
+  <path d="M130 80 Q150 100 200 120" stroke="#667eea" stroke-width="2" fill="none" opacity="0.3" stroke-dasharray="5,5"/>
+  <path d="M240 140 Q220 160 180 180" stroke="#764ba2" stroke-width="2" fill="none" opacity="0.3" stroke-dasharray="5,5"/>
+  
+  <!-- Floating Particles -->
+  <circle cx="350" cy="50" r="3" fill="#43e97b" opacity="0.6">
+    <animate attributeName="cy" values="50;40;50" dur="3s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="320" cy="200" r="2" fill="#667eea" opacity="0.7">
+    <animate attributeName="cy" values="200;190;200" dur="2.5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="30" cy="150" r="2.5" fill="#ffa726" opacity="0.5">
+    <animate attributeName="cy" values="150;140;150" dur="3.5s" repeatCount="indefinite"/>
+  </circle>
+</svg>

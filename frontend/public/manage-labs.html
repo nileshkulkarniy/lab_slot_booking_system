@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Manage Labs</title>
+  <link rel="stylesheet" href="manage-labs.css" />
+</head>
+<body>
+  <!-- Animated Background Elements -->
+  <div class="lab-icons">
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+  </div>
+
+  <div class="container">
+    <h1>Manage Labs</h1>
+
+    <!-- Lab Form -->
+    <form id="labForm">
+      <div class="form-group">
+        <label for="faculty">Faculty/Department:</label>
+        <input type="text" id="faculty" placeholder="e.g., Computer Science" required />
+      </div>
+      
+      <div class="form-group">
+        <label for="labNumber">Lab Number:</label>
+        <select id="labNumber" required>
+          <option value="">Select Lab Number</option>
+          <option value="1">Lab 1</option>
+          <option value="2">Lab 2</option>
+          <option value="3">Lab 3</option>
+          <option value="4">Lab 4</option>
+          <option value="5">Lab 5</option>
+        </select>
+      </div>
+      
+
+      
+      <button type="submit">Add Lab</button>
+    </form>
+
+    <!-- Lab Table -->
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Faculty</th>
+          <th>Lab Number</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="labTableBody">
+        <!-- Lab entries will be populated here by JavaScript -->
+      </tbody>
+    </table>
+    
+    <div class="back-button-container">
+      <a href="admin-dashboard.html" class="back-button"> Back to Dashboard</a>
+    </div>
+  </div>
+
+  <script src="js/manage-labs.js"></script>
+</body>
+</html>

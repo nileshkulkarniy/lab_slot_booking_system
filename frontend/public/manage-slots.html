@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Manage Slots</title>
+  <link rel="stylesheet" href="manage-slots.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Manage Lab Slots</h1>
+
+    <!-- Back to Dashboard -->
+    <div class="back-button-container">
+      <a href="admin-dashboard.html" class="back-button"> Back to Dashboard</a>
+    </div>
+
+    <!-- Slot Form -->
+    <div class="slot-form">
+      <h2>Add New Slot</h2>
+      <form id="slotForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slotLab">Lab</label>
+            <select id="slotLab" required>
+              <option value="">Select a Lab</option>
+              <!-- Lab options will be populated by JavaScript -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="slotDate">Date</label>
+            <input type="date" id="slotDate" required />
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label for="slotStartTime">Start Time</label>
+            <input type="time" id="slotStartTime" required />
+          </div>
+          
+          <div class="form-group">
+            <label for="slotEndTime">End Time</label>
+            <input type="time" id="slotEndTime" required />
+          </div>
+        </div>
+        
+
+        
+        <div class="form-actions">
+          <button type="submit" class="btn btn-primary">Add Slot</button>
+          <button type="button" class="btn btn-secondary" onclick="cancelEdit()">Cancel</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Slot Table -->
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Faculty</th>
+            <th>Lab Number</th>
+            <th>Date</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="slotTableBody">
+          <!-- Slots will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script src="js/manage-slots.js"></script>
+</body>
+</html>

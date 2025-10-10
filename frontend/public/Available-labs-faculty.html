@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Available Labs</title>
+  <link rel="stylesheet" href="Available-labs-faculty.css">
+</head>
+<body>
+  <!-- Floating Lab Icons -->
+  <div class="lab-icons">
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+    <div class="lab-icon"></div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <h1>Available Labs</h1>
+      <p>Browse and select labs for booking</p>
+    </div>
+
+    <div class="labs-grid" id="labsContainer">
+      <!-- Labs will be dynamically loaded here -->
+      <div class="empty-state">
+        <div class="empty-icon">🔬</div>
+        <h3>No Labs Available</h3>
+        <p>There are currently no labs available for booking.</p>
+      </div>
+    </div>
+
+    <div class="pagination">
+      <button id="prevPage" class="page-btn" disabled>Previous</button>
+      <span id="pageInfo" class="page-info">Page 1 of 1</span>
+      <button id="nextPage" class="page-btn" disabled>Next</button>
+    </div>
+
+    <a href="faculty-dashboard.html" class="back-btn">Back to Dashboard</a>
+  </div>
+
+  <script src="js/available-labs.js"></script>
+</body>
+</html>

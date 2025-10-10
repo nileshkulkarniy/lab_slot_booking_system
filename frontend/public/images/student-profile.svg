@@ -1,0 +1,118 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="profileGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#43e97b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#38f9d7;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:0.1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:0.1" />
+    </linearGradient>
+    <filter id="profileShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(0,0,0,0.15)"/>
+    </filter>
+    <filter id="innerShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feOffset dx="0" dy="2"/>
+      <feGaussianBlur stdDeviation="3" result="offset-blur"/>
+      <feFlood flood-color="rgba(0,0,0,0.3)"/>
+      <feComposite in2="offset-blur" operator="in"/>
+      <feMerge> 
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="95" fill="url(#bgGradient)"/>
+  
+  <!-- Main profile circle -->
+  <circle cx="100" cy="100" r="80" fill="white" filter="url(#profileShadow)"/>
+  <circle cx="100" cy="100" r="75" fill="url(#profileGradient)" opacity="0.1"/>
+  
+  <!-- Student avatar -->
+  <!-- Head -->
+  <circle cx="100" cy="75" r="25" fill="url(#profileGradient)" filter="url(#innerShadow)"/>
+  
+  <!-- Hair -->
+  <path d="M 75 65 Q 85 45 100 50 Q 115 45 125 65 Q 125 55 100 45 Q 75 55 75 65 Z" fill="#2c3e50" opacity="0.8"/>
+  
+  <!-- Eyes -->
+  <circle cx="92" cy="72" r="3" fill="white"/>
+  <circle cx="108" cy="72" r="3" fill="white"/>
+  <circle cx="92" cy="72" r="2" fill="#2c3e50"/>
+  <circle cx="108" cy="72" r="2" fill="#2c3e50"/>
+  
+  <!-- Smile -->
+  <path d="M 90 80 Q 100 85 110 80" stroke="#2c3e50" stroke-width="2" fill="none" stroke-linecap="round"/>
+  
+  <!-- Body/Shoulders -->
+  <ellipse cx="100" cy="140" rx="35" ry="25" fill="url(#profileGradient)" filter="url(#innerShadow)"/>
+  
+  <!-- Shirt/Lab coat -->
+  <path d="M 65 125 Q 70 115 100 115 Q 130 115 135 125 L 135 165 Q 130 170 100 170 Q 70 170 65 165 Z" fill="white" opacity="0.9" filter="url(#innerShadow)"/>
+  
+  <!-- Lab coat collar -->
+  <path d="M 85 115 Q 90 110 100 112 Q 110 110 115 115" stroke="#e0e0e0" stroke-width="2" fill="none"/>
+  
+  <!-- Stethoscope -->
+  <circle cx="88" cy="130" r="4" fill="none" stroke="#43e97b" stroke-width="2"/>
+  <path d="M 88 134 Q 95 145 105 140" stroke="#43e97b" stroke-width="2" fill="none"/>
+  <circle cx="105" cy="140" r="2" fill="#43e97b"/>
+  
+  <!-- Book/Notebook -->
+  <g transform="translate(120, 130)">
+    <rect x="0" y="0" width="15" height="20" rx="2" fill="#667eea" filter="url(#innerShadow)"/>
+    <rect x="2" y="2" width="11" height="16" fill="white" opacity="0.9"/>
+    <line x1="4" y1="6" x2="11" y2="6" stroke="#667eea" stroke-width="1"/>
+    <line x1="4" y1="9" x2="11" y2="9" stroke="#667eea" stroke-width="1"/>
+    <line x1="4" y1="12" x2="9" y2="12" stroke="#667eea" stroke-width="1"/>
+  </g>
+  
+  <!-- Academic cap -->
+  <g transform="translate(100, 45)">
+    <ellipse cx="0" cy="0" rx="15" ry="5" fill="#2c3e50"/>
+    <rect x="-8" y="-5" width="16" height="8" fill="#2c3e50"/>
+    <rect x="8" y="-3" width="12" height="2" fill="#f093fb">
+      <animate attributeName="x" values="8;12;8" dur="3s" repeatCount="indefinite"/>
+    </rect>
+  </g>
+  
+  <!-- Status indicators -->
+  <g transform="translate(160, 60)">
+    <circle cx="0" cy="0" r="12" fill="#43e97b" filter="url(#profileShadow)">
+      <animate attributeName="opacity" values="0.8;1;0.8" dur="2s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="4" text-anchor="middle" fill="white" font-family="Arial" font-size="12" font-weight="bold">✓</text>
+  </g>
+  
+  <!-- Academic achievements -->
+  <g transform="translate(40, 140)">
+    <polygon points="0,0 8,5 0,10 -8,5" fill="#ffa726" filter="url(#profileShadow)">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/>
+    </polygon>
+    <circle cx="0" cy="5" r="3" fill="white"/>
+    <text x="0" y="8" text-anchor="middle" fill="#ffa726" font-family="Arial" font-size="8" font-weight="bold">A</text>
+  </g>
+  
+  <!-- Floating education icons -->
+  <g transform="translate(30, 80)">
+    <circle cx="0" cy="0" r="8" fill="url(#profileGradient)" opacity="0.3">
+      <animate attributeName="cy" values="0;-8;0" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="3" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">📚</text>
+  </g>
+  
+  <g transform="translate(170, 120)">
+    <circle cx="0" cy="0" r="6" fill="#f093fb" opacity="0.6">
+      <animate attributeName="cy" values="0;-6;0" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="2" text-anchor="middle" fill="white" font-family="Arial" font-size="6" font-weight="bold">🔬</text>
+  </g>
+  
+  <!-- Progress ring -->
+  <circle cx="100" cy="100" r="90" fill="none" stroke="url(#profileGradient)" stroke-width="3" opacity="0.3" stroke-dasharray="10 5">
+    <animateTransform attributeName="transform" type="rotate" values="0 100 100;360 100 100" dur="20s" repeatCount="indefinite"/>
+  </circle>
+  
+</svg>

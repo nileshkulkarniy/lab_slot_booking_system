@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports</title>
+  <link rel="stylesheet" href="admin-reports.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>Booking Reports</h1>
+    <div class="filters">
+      <input type="date" id="startDate" />
+      <input type="date" id="endDate" />
+      <button id="filterBtn">Filter</button>
+      <button id="exportPDF">Export PDF</button>
+      <button id="exportCSV">Export CSV</button>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Faculty</th>
+          <th>Faculty Email</th>
+          <th>Lab Number</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Booked At</th>
+        </tr>
+      </thead>
+      <tbody id="reportTableBody">
+        <!-- Populated via JS -->
+      </tbody>
+    </table>
+    <a href="admin-dashboard.html" class="back-btn">← Back to Dashboard</a>
+  </div>
+  <script src="js/admin-reports.js"></script>
+</body>
+</html>

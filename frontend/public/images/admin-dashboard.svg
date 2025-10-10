@@ -1,0 +1,169 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="adminGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="chartGradient1" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#43e97b;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#43e97b;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="chartGradient2" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#f093fb;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#f093fb;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="chartGradient3" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" style="stop-color:#4facfe;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#4facfe;stop-opacity:1" />
+    </linearGradient>
+    <filter id="dashboardShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="6" flood-color="rgba(0,0,0,0.2)"/>
+    </filter>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge> 
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background -->
+  <circle cx="100" cy="100" r="95" fill="url(#adminGradient)" opacity="0.1"/>
+  
+  <!-- Main dashboard container -->
+  <rect x="20" y="30" width="160" height="140" rx="15" fill="white" filter="url(#dashboardShadow)"/>
+  
+  <!-- Header bar -->
+  <rect x="20" y="30" width="160" height="25" rx="15" fill="url(#adminGradient)"/>
+  <rect x="20" y="45" width="160" height="10" fill="url(#adminGradient)"/>
+  
+  <!-- Header text -->
+  <text x="100" y="48" text-anchor="middle" fill="white" font-family="Arial" font-size="8" font-weight="bold">ADMIN DASHBOARD</text>
+  
+  <!-- Navigation dots -->
+  <circle cx="160" cy="42" r="2" fill="white" opacity="0.8"/>
+  <circle cx="168" cy="42" r="2" fill="white" opacity="0.8"/>
+  <circle cx="176" cy="42" r="2" fill="white" opacity="0.8"/>
+  
+  <!-- Dashboard widgets/cards -->
+  <!-- Stats cards -->
+  <rect x="30" y="65" width="35" height="25" rx="5" fill="#43e97b" opacity="0.9" filter="url(#dashboardShadow)"/>
+  <text x="47" y="75" text-anchor="middle" fill="white" font-family="Arial" font-size="6" font-weight="bold">USERS</text>
+  <text x="47" y="84" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">1,247</text>
+  
+  <rect x="75" y="65" width="35" height="25" rx="5" fill="#f093fb" opacity="0.9" filter="url(#dashboardShadow)"/>
+  <text x="92" y="75" text-anchor="middle" fill="white" font-family="Arial" font-size="6" font-weight="bold">LABS</text>
+  <text x="92" y="84" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">24</text>
+  
+  <rect x="120" y="65" width="35" height="25" rx="5" fill="#4facfe" opacity="0.9" filter="url(#dashboardShadow)"/>
+  <text x="137" y="75" text-anchor="middle" fill="white" font-family="Arial" font-size="6" font-weight="bold">BOOKING</text>
+  <text x="137" y="84" text-anchor="middle" fill="white" font-family="Arial" font-size="10" font-weight="bold">89%</text>
+  
+  <!-- Chart area -->
+  <rect x="30" y="100" width="140" height="60" rx="8" fill="#f8f9fa" stroke="#e9ecef" stroke-width="1"/>
+  
+  <!-- Bar chart -->
+  <rect x="40" y="135" width="8" height="15" fill="url(#chartGradient1)">
+    <animate attributeName="height" values="5;15;5" dur="3s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="145;135;145" dur="3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="52" y="125" width="8" height="25" fill="url(#chartGradient2)">
+    <animate attributeName="height" values="15;25;15" dur="3.5s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="135;125;135" dur="3.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="64" y="130" width="8" height="20" fill="url(#chartGradient3)">
+    <animate attributeName="height" values="10;20;10" dur="4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="140;130;140" dur="4s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="76" y="120" width="8" height="30" fill="url(#chartGradient1)">
+    <animate attributeName="height" values="20;30;20" dur="2.5s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="130;120;130" dur="2.5s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="88" y="140" width="8" height="10" fill="url(#chartGradient2)">
+    <animate attributeName="height" values="5;10;5" dur="4.5s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="145;140;145" dur="4.5s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Line chart -->
+  <polyline points="110,140 120,130 130,135 140,125 150,120" 
+           stroke="url(#adminGradient)" stroke-width="2" fill="none" filter="url(#glow)">
+    <animate attributeName="points" 
+             values="110,140 120,130 130,135 140,125 150,120;110,135 120,125 130,130 140,120 150,115;110,140 120,130 130,135 140,125 150,120" 
+             dur="5s" repeatCount="indefinite"/>
+  </polyline>
+  
+  <!-- Data points -->
+  <circle cx="110" cy="140" r="2" fill="url(#adminGradient)" filter="url(#glow)">
+    <animate attributeName="cy" values="140;135;140" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="120" cy="130" r="2" fill="url(#adminGradient)" filter="url(#glow)">
+    <animate attributeName="cy" values="130;125;130" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="130" cy="135" r="2" fill="url(#adminGradient)" filter="url(#glow)">
+    <animate attributeName="cy" values="135;130;135" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="140" cy="125" r="2" fill="url(#adminGradient)" filter="url(#glow)">
+    <animate attributeName="cy" values="125;120;125" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  <circle cx="150" cy="120" r="2" fill="url(#adminGradient)" filter="url(#glow)">
+    <animate attributeName="cy" values="120;115;120" dur="5s" repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Chart labels -->
+  <text x="35" y="108" text-anchor="start" fill="#666" font-family="Arial" font-size="6">Usage Analytics</text>
+  <text x="165" y="108" text-anchor="end" fill="#666" font-family="Arial" font-size="6">Real-time</text>
+  
+  <!-- Pie chart indicator -->
+  <g transform="translate(165, 130)">
+    <circle cx="0" cy="0" r="15" fill="white" stroke="#e9ecef" stroke-width="1" filter="url(#dashboardShadow)"/>
+    <path d="M 0,-15 A 15,15 0 0,1 12,9 L 0,0 Z" fill="#43e97b"/>
+    <path d="M 12,9 A 15,15 0 0,1 -9,12 L 0,0 Z" fill="#f093fb"/>
+    <path d="M -9,12 A 15,15 0 0,1 0,-15 L 0,0 Z" fill="#4facfe"/>
+    <circle cx="0" cy="0" r="8" fill="white"/>
+    <text x="0" y="2" text-anchor="middle" fill="#666" font-family="Arial" font-size="6" font-weight="bold">85%</text>
+  </g>
+  
+  <!-- Notification bell -->
+  <g transform="translate(25, 40)">
+    <path d="M 0,-3 Q -3,-6 -6,-3 Q -6,0 -3,3 Q 0,6 3,3 Q 6,0 6,-3 Q 3,-6 0,-3 Z" fill="#ffa726" filter="url(#glow)">
+      <animate attributeName="opacity" values="0.7;1;0.7" dur="2s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="3" cy="-2" r="2" fill="#ef5350">
+      <animate attributeName="r" values="1.5;2.5;1.5" dur="1s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+  
+  <!-- Settings gear -->
+  <g transform="translate(160, 40)">
+    <path d="M 0,-4 L 1,-3 L 3,-4 L 4,-2 L 3,-1 L 4,1 L 2,4 L 1,3 L -1,4 L -2,2 L -3,1 L -4,-1 L -2,-4 Z" 
+          fill="white" opacity="0.8">
+      <animateTransform attributeName="transform" type="rotate" values="0;360" dur="8s" repeatCount="indefinite"/>
+    </path>
+    <circle cx="0" cy="0" r="2" fill="white"/>
+  </g>
+  
+  <!-- Admin crown -->
+  <g transform="translate(100, 20)">
+    <path d="M -8,0 L -4,-8 L 0,-5 L 4,-8 L 8,0 Z" fill="#ffa726" filter="url(#glow)"/>
+    <circle cx="-4" cy="-6" r="1.5" fill="white"/>
+    <circle cx="0" cy="-3" r="1.5" fill="white"/>
+    <circle cx="4" cy="-6" r="1.5" fill="white"/>
+  </g>
+  
+  <!-- Floating analytics indicators -->
+  <g transform="translate(15, 100)">
+    <circle cx="0" cy="0" r="8" fill="url(#adminGradient)" opacity="0.2">
+      <animate attributeName="cy" values="0;-10;0" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="3" text-anchor="middle" fill="url(#adminGradient)" font-family="Arial" font-size="8" font-weight="bold">📊</text>
+  </g>
+  
+  <g transform="translate(185, 80)">
+    <circle cx="0" cy="0" r="6" fill="#43e97b" opacity="0.3">
+      <animate attributeName="cy" values="0;-8;0" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <text x="0" y="2" text-anchor="middle" fill="white" font-family="Arial" font-size="6" font-weight="bold">📈</text>
+  </g>
+  
+</svg>

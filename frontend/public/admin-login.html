@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login - LabBook</title>
+  <link rel="stylesheet" href="admin-login.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-shape shape-3"></div>
+    <div class="admin-pattern"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2C13.1 2 14 2.9 14 4V6H16C17.1 6 18 6.9 18 8V19C18 20.1 17.1 21 16 21H8C6.9 21 6 20.1 6 19V8C6 6.9 6.9 6 8 6H10V4C10 2.9 10.9 2 12 2M12 4C11.4 4 11 4.4 11 5V7H13V5C13 4.4 12.6 4 12 4M8 8V19H16V8H8Z"/>
+          </svg>
+        </div>
+        <span class="logo-text">LabBook</span>
+      </a>
+      
+      <div class="nav-breadcrumb">
+        <span>Admin Portal</span>
+        <div class="security-badge">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M12 15C13.03 15 14.45 15.38 15.91 16.15C15.97 16.43 16 16.71 16 17C16 17.35 15.97 17.69 15.91 18C14.45 18.69 13.03 19 12 19C10.97 19 9.55 18.69 8.09 18C8.03 17.69 8 17.35 8 17C8 16.71 8.03 16.43 8.09 16.15C9.55 15.38 10.97 15 12 15Z"/>
+          </svg>
+          <span>Secure Login</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="auth-icon">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z"/>
+          </svg>
+        </div>
+        <h1>Administrator Access</h1>
+        <p>Secure login to admin dashboard</p>
+        
+        <div class="security-indicators">
+          <div class="indicator">
+            <div class="indicator-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 2C13.1 2 14 2.9 14 4V6H16C17.1 6 18 6.9 18 8V19C18 20.1 17.1 21 16 21H8C6.9 21 6 20.1 6 19V8C6 6.9 6.9 6 8 6H10V4C10 2.9 10.9 2 12 2M12 4C11.4 4 11 4.4 11 5V7H13V5C13 4.4 12.6 4 12 4M8 8V19H16V8H8Z"/>
+              </svg>
+            </div>
+            <span>Encrypted Connection</span>
+          </div>
+          <div class="indicator">
+            <div class="indicator-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M12 15C13.03 15 14.45 15.38 15.91 16.15C15.97 16.43 16 16.71 16 17C16 17.35 15.97 17.69 15.91 18C14.45 18.69 13.03 19 12 19C10.97 19 9.55 18.69 8.09 18C8.03 17.69 8 17.35 8 17C8 16.71 8.03 16.43 8.09 16.15C9.55 15.38 10.97 15 12 15Z"/>
+              </svg>
+            </div>
+            <span>256-bit SSL</span>
+          </div>
+        </div>
+      </div>
+
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="email">Admin Email</label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20 4H4C2.9 4 2 4.9 2 6V18C2 19.1 2.9 20 4 20H20C21.1 20 22 19.1 22 18V6C22 4.9 21.1 4 20 4M20 8L12 13L4 8V6L12 11L20 6V8Z"/>
+              </svg>
+            </div>
+            <input type="email" id="email" name="email" placeholder="Enter your admin email" required />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <div class="input-icon">
+              <svg viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M12 15C13.03 15 14.45 15.38 15.91 16.15C15.97 16.43 16 16.71 16 17C16 17.35 15.97 17.69 15.91 18C14.45 18.69 13.03 19 12 19C10.97 19 9.55 18.69 8.09 18C8.03 17.69 8 17.35 8 17C8 16.71 8.03 16.43 8.09 16.15C9.55 15.38 10.97 15 12 15Z"/>
+              </svg>
+            </div>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+            <button type="button" class="password-toggle" onclick="togglePassword()">
+              <svg class="eye-open" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5S21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5M12 17C9.24 17 7 14.76 7 12S9.24 7 12 7 17 9.24 17 12 14.76 17 12 17M12 9C10.34 9 9 10.34 9 12S10.34 15 12 15 15 13.66 15 12 13.66 9 12 9Z"/>
+              </svg>
+              <svg class="eye-closed" viewBox="0 0 24 24" fill="currentColor" style="display: none;">
+                <path d="M11.83 9L15 12.16C15 12.11 15 12.05 15 12C15 10.34 13.66 9 12 9C11.94 9 11.89 9 11.83 9M7.53 9.8L9.08 11.35C9.03 11.56 9 11.77 9 12C9 13.66 10.34 15 12 15C12.22 15 12.44 14.97 12.65 14.92L14.2 16.47C13.53 16.8 12.79 17 12 17C9.24 17 7 14.76 7 12C7 11.21 7.2 10.47 7.53 9.8M2 4.27L4.28 6.55L4.73 7C3.08 8.3 1.78 10 1 12C2.73 16.39 7 19.5 12 19.5C13.55 19.5 15.03 19.2 16.38 18.66L16.81 19.09L19.73 22L21 20.73L3.27 3L2 4.27M12 7C13.66 7 15 8.34 15 10C15 10.64 14.87 11.26 14.63 11.82L17.93 15.12C18.57 14.5 19.07 13.79 19.42 13C18.17 10.19 15.33 8.5 12 8.5C11.28 8.5 10.59 8.59 9.94 8.77L12.18 11C12.35 7.22 12.01 7.13 12 7Z"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-options">
+          <label class="checkbox-wrapper">
+            <input type="checkbox" id="remember" name="remember">
+            <span class="checkmark"></span>
+            <span class="checkbox-text">Remember me</span>
+          </label>
+          <div class="auth-links">
+            <a href="admin-forgot-password.html" class="forgot-link">Forgot password?</a>
+            <a href="Admin-register.html" class="register-link">Create account</a>
+          </div>
+        </div>
+
+        <button type="submit" class="auth-button">
+          <span class="button-text">Sign In</span>
+          <div class="button-loader" style="display: none;">
+            <div class="spinner"></div>
+          </div>
+          <div class="button-success" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M9 16.17L4.83 12L3.41 13.41L9 19L21 7L19.59 5.59L9 16.17Z"/>
+            </svg>
+          </div>
+        </button>
+
+        <div id="message" class="message" style="display: none;"></div>
+      </form>
+
+      <div class="auth-footer">
+        <div class="security-notice">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1M12 7C13.66 7 15 8.34 15 10C15 11.66 13.66 13 12 13C10.34 13 9 11.66 9 10C9 8.34 10.34 7 12 7M12 15C13.03 15 14.45 15.38 15.91 16.15C15.97 16.43 16 16.71 16 17C16 17.35 15.97 17.69 15.91 18C14.45 18.69 13.03 19 12 19C10.97 19 9.55 18.69 8.09 18C8.03 17.69 8 17.35 8 17C8 16.71 8.03 16.43 8.09 16.15C9.55 15.38 10.97 15 12 15Z"/>
+          </svg>
+          <span>For security reasons, please log out when you're done</span>
+        </div>
+        <a href="index.html" class="back-link">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 7V4H5V7H3V4C3 2.9 3.9 2 5 2H19C20.1 2 21 2.9 21 4V7H19M16 12L14.59 10.59L11.17 14L9.59 12.41L8.17 13.83L11.17 16.83L16 12M21 9H3V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V9Z"/>
+          </svg>
+          Back to Home
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Password toggle functionality
+    function togglePassword() {
+      const passwordInput = document.getElementById('password');
+      const eyeOpen = document.querySelector('.eye-open');
+      const eyeClosed = document.querySelector('.eye-closed');
+      
+      if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        eyeOpen.style.display = 'none';
+        eyeClosed.style.display = 'block';
+      } else {
+        passwordInput.type = 'password';
+        eyeOpen.style.display = 'block';
+        eyeClosed.style.display = 'none';
+      }
+    }
+
+    // Form submission with enhanced UX
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const messageDiv = document.getElementById('message');
+      const button = document.querySelector('.auth-button');
+      const buttonText = document.querySelector('.button-text');
+      const buttonLoader = document.querySelector('.button-loader');
+      const buttonSuccess = document.querySelector('.button-success');
+      
+      // Reset message
+      messageDiv.style.display = 'none';
+      messageDiv.className = 'message';
+      
+      // Show loading state
+      button.disabled = true;
+      buttonText.style.display = 'none';
+      buttonLoader.style.display = 'block';
+      button.classList.add('loading');
+
+      try {
+        const res = await fetch('/api/auth/admin-login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+          // Show error state
+          buttonLoader.style.display = 'none';
+          buttonText.style.display = 'block';
+          button.disabled = false;
+          button.classList.remove('loading');
+          
+          messageDiv.textContent = data.msg || 'Login failed. Please check your credentials.';
+          messageDiv.className = 'message error';
+          messageDiv.style.display = 'block';
+          
+          // Add shake animation to form
+          document.querySelector('.auth-form').classList.add('shake');
+          setTimeout(() => {
+            document.querySelector('.auth-form').classList.remove('shake');
+          }, 500);
+        } else {
+          // Show success state
+          buttonLoader.style.display = 'none';
+          buttonSuccess.style.display = 'block';
+          button.classList.remove('loading');
+          button.classList.add('success');
+          
+          localStorage.setItem('token', data.token);
+          
+          messageDiv.textContent = 'Login successful! Redirecting...';
+          messageDiv.className = 'message success';
+          messageDiv.style.display = 'block';
+          
+          // Redirect after animation
+          setTimeout(() => {
+            window.location.href = '/admin-dashboard.html';
+          }, 1500);
+        }
+      } catch (err) {
+        buttonLoader.style.display = 'none';
+        buttonText.style.display = 'block';
+        button.disabled = false;
+        button.classList.remove('loading');
+        
+        messageDiv.textContent = 'Network error. Please check your connection and try again.';
+        messageDiv.className = 'message error';
+        messageDiv.style.display = 'block';
+      }
+    });
+
+    // Add floating labels effect
+    document.querySelectorAll('input').forEach(input => {
+      input.addEventListener('focus', function() {
+        this.parentElement.parentElement.classList.add('focused');
+      });
+      
+      input.addEventListener('blur', function() {
+        if (!this.value) {
+          this.parentElement.parentElement.classList.remove('focused');
+        }
+      });
+      
+      // Check if input has value on load
+      if (input.value) {
+        input.parentElement.parentElement.classList.add('focused');
+      }
+    });
+  </script>
+</body>
+</html>

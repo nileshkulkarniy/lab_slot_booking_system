@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Faculty Dashboard</title>
+  <link rel="stylesheet" href="faculty-dashboard.css" />
+</head>
+<body>
+  <div class="sidebar">
+    <h2>Faculty</h2>
+    <ul>
+      <li><a href="faculty-dashboard.html">Dashboard</a></li>
+      <li><a href="Available-labs-faculty.html">Available Labs</a></li>
+      <li><a href="my-bookings.html">My Bookings</a></li>
+      <li><a href="book-slot.html">Book Lab Slot</a></li>
+      <li><a href="faculty-profile.html">Profile</a></li>
+      <li><a href="faculty-login.html">Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="main">
+    <div class="topbar">
+      <h1>Welcome, <span id="facultyName">Faculty</span></h1>
+      <div class="profile-section">
+        <div class="profile-picture-container" onclick="goToProfile()">
+          <img id="profilePicture" src="" alt="Profile" class="profile-picture">
+          <div class="profile-picture-placeholder" id="profilePlaceholder">
+            <span id="profileInitials">T</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards">
+      <div class="card">
+        <h3>Booked Labs</h3>
+        <p>3</p>
+      </div>
+      <div class="card">
+        <h3>Upcoming Slots</h3>
+        <p>2</p>
+      </div>
+      <div class="card">
+        <h3>Cancelled</h3>
+        <p>1</p>
+      </div>
+    </div>
+
+    <div class="table-section">
+      <h2>My Recent Bookings</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Faculty</th>
+            <th>Lab Number</th>
+            <th>Date</th>
+            <th>Slot</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Recent bookings will be populated by JavaScript -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Marquee Footer -->
+  <div class="marquee-footer">
+    <marquee behavior="scroll" direction="left" scrollamount="5">
+      1st Cross, 1st Stage, Peenya, Bengaluru 560058, Karnataka, INDIA.        &copy; AIMS Institutes 2025     </marquee>
+  </div>
+
+  <script src="js/faculty-dashboard.js"></script>
+</body>
+</html>

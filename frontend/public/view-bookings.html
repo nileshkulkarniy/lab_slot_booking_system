@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>View Bookings</title>
+  <link rel="stylesheet" href="view-bookings.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>All Slot Bookings</h1>
+
+    <!-- Date filter elements -->
+    <div class="booking-filters">
+      <div class="filter-group">
+        <label for="dateFrom">From Date:</label>
+        <input type="date" id="dateFrom" class="filter-input">
+      </div>
+      <div class="filter-group">
+        <label for="dateTo">To Date:</label>
+        <input type="date" id="dateTo" class="filter-input">
+      </div>
+      <button id="applyDateFilter" class="filter-btn">Apply Filter</button>
+      <button id="clearDateFilter" class="filter-btn clear-btn">Clear</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Name</th>
+          <th>Faculty</th>
+          <th>Lab Number</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Status</th>
+          <th>Booked At</th>
+        </tr>
+      </thead>
+      <tbody id="bookingTableBody">
+        <!-- Populated dynamically -->
+      </tbody>
+    </table>
+    
+    <div class="export-buttons">
+      <button onclick="exportBookings('pdf')">Export PDF</button>
+      <button onclick="exportBookings('csv')">Export CSV</button>
+    </div>
+
+    <a href="admin-dashboard.html" class="back-btn">← Back to Dashboard</a>
+  </div>
+
+  <script src="js/view-bookings.js"></script>
+</body>
+</html>

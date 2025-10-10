@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Book Lab Slot</title>
+  <link rel="stylesheet" href="book-slot.css" />
+</head>
+<body>
+  <!-- Floating Booking Icons -->
+  <div class="booking-icons">
+    <div class="booking-icon"></div>
+    <div class="booking-icon"></div>
+    <div class="booking-icon"></div>
+  </div>
+
+  <div class="container">
+    <h1>Book a Lab Slot</h1>
+
+    <form id="bookingForm">
+      <div class="form-group">
+        <label for="labSelect">Select Lab:</label>
+        <select id="labSelect" required>
+          <option value="">Choose a lab</option>
+          <!-- Options will be populated by JavaScript -->
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="dateSelect">Select Date:</label>
+        <input type="date" id="dateSelect" required />
+      </div>
+
+      <div class="form-group">
+        <label for="slotSelect">Available Slots:</label>
+        <select id="slotSelect" required>
+          <option value="">Select a lab and date first</option>
+        </select>
+      </div>
+
+      <button type="submit">Book Slot</button>
+    </form>
+
+    <div id="message" class="message" style="display: none;"></div>
+    <a href="faculty-dashboard.html" class="back-btn">Back to Dashboard</a>
+  </div>
+
+  <script>
+    // Pass URL parameters to the JavaScript
+    const urlParams = new URLSearchParams(window.location.search);
+    const labId = urlParams.get('labId');
+    if (labId) {
+      // Store in a global variable that the script can access
+      window.preselectedLabId = labId;
+    }
+  </script>
+  <script src="js/book-slot.js"></script>
+</body>
+</html>
