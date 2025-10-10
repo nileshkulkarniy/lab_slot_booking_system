@@ -263,6 +263,66 @@ heroku addons:create mongolab:sandbox
 git push heroku master
 ```
 
+### GitHub Deployment
+
+The project has been successfully deployed to GitHub at:
+[https://github.com/nileshkulkarniy/lab_slot_booking_system](https://github.com/nileshkulkarniy/lab_slot_booking_system)
+
+To clone the repository:
+```bash
+git clone https://github.com/nileshkulkarniy/lab_slot_booking_system.git
+cd lab_slot_booking_system
+npm install
+npm start
+```
+
+### Heroku Deployment
+
+1. Create a Heroku account at [heroku.com](https://heroku.com)
+2. Install the Heroku CLI
+3. Login to Heroku CLI:
+   ```bash
+   heroku login
+   ```
+4. Create a new Heroku app:
+   ```bash
+   heroku create your-app-name
+   ```
+5. Add MongoDB addon:
+   ```bash
+   heroku addons:create mongolab:sandbox
+   ```
+6. Set environment variables:
+   ```bash
+   heroku config:set NODE_ENV=production
+   heroku config:set JWT_SECRET=your_strong_jwt_secret
+   ```
+7. Deploy the application:
+   ```bash
+   git push heroku main
+   ```
+8. Open the application:
+   ```bash
+   heroku open
+   ```
+
+### Vercel Deployment
+
+1. Create a Vercel account at [vercel.com](https://vercel.com)
+2. Install Vercel CLI:
+   ```bash
+   npm install -g vercel
+   ```
+3. Login to Vercel:
+   ```bash
+   vercel login
+   ```
+4. Deploy the project:
+   ```bash
+   vercel
+   ```
+5. Follow the prompts to configure your project
+
 ## Contributing
 
 1. Fork the repository
