@@ -463,7 +463,7 @@ body {
   font-weight: 400;
 }
 
-.toggle-password {
+.password-toggle {
   position: absolute;
   right: var(--space-4);
   background: none;
@@ -477,13 +477,14 @@ body {
   justify-content: center;
   transition: var(--transition-normal);
   padding: 0;
+  z-index: 2; /* Ensure the toggle button is above the input */
 }
 
-.toggle-password:hover {
+.password-toggle:hover {
   color: var(--gray-600);
 }
 
-.toggle-password svg {
+.password-toggle svg {
   width: 100%;
   height: 100%;
 }
@@ -791,7 +792,7 @@ body {
 /* Focus styles for keyboard navigation */
 .auth-form input:focus,
 .submit-btn:focus,
-.toggle-password:focus,
+.password-toggle:focus,
 .auth-footer a:focus {
   outline: 2px solid var(--primary-gradient);
   outline-offset: 2px;

@@ -338,3 +338,13 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Note**: This system was designed for educational institutions to efficiently manage laboratory bookings and reduce administrative overhead.
+
+## Author
+
+**Nilesh Kulkarni**
+- Email: knilesh996@gmail.com
+- GitHub: [@nileshkulkarniy](https://github.com/nileshkulkarniy)
+- Facebook: [Nilesh Kulkarni](https://www.facebook.com/nileshkulkarniyd)
+- Instagram: [@nileshkulkarniy](https://www.instagram.com/nileshkulkarniy)
+- Twitter: [@nileshkulkarniy](https://twitter.com/nileshkulkarniy)
+- LinkedIn: [Nilesh Kulkarni](https://www.linkedin.com/in/nileshkulkarniy)

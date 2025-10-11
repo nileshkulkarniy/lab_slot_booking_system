@@ -155,8 +155,9 @@
     // Password toggle functionality
     function togglePassword() {
       const passwordInput = document.getElementById('password');
-      const eyeOpen = document.querySelector('.eye-open');
-      const eyeClosed = document.querySelector('.eye-closed');
+      const toggleButton = document.querySelector('.password-toggle');
+      const eyeOpen = toggleButton.querySelector('.eye-open');
+      const eyeClosed = toggleButton.querySelector('.eye-closed');
       
       if (passwordInput.type === 'password') {
         passwordInput.type = 'text';
