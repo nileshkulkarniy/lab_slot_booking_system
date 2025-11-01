@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   const dateTo = document.getElementById('dateTo');
   const applyDateFilter = document.getElementById('applyDateFilter');
   const clearDateFilter = document.getElementById('clearDateFilter');
+  
+  console.log('DOM Elements:', { dateFrom, dateTo, applyDateFilter, clearDateFilter });
 
   // Set default dates
   const today = new Date();
@@ -91,6 +93,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Fetch recent bookings
   async function fetchRecentBookings(fromDate = '', toDate = '') {
     try {
+      console.log('Fetching recent bookings with dates:', fromDate, toDate);
       const url = new URL('/api/admin/recent-bookings', window.location.origin);
       if (fromDate) url.searchParams.append('fromDate', fromDate);
       if (toDate) url.searchParams.append('toDate', toDate);
@@ -130,43 +133,30 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Use the faculty name directly from the API response
         const facultyName = booking.faculty || 'Unknown Faculty';
         
-        // Extract faculty and lab number from lab name
+        // Extract lab faculty and lab number from lab name
         let facultyFromLab = '-';
         let labNumber = '-';
         
         if (booking.lab) {
           const originalLabName = booking.lab;
           
-          // Handle MCA labs specially
-          if (/mca/i.test(originalLabName)) {
-            facultyFromLab = 'MCA';
-            // Extract lab number from "MCA Lab X" format
-            const mcaMatch = originalLabName.match(/MCA Lab (\d+)/i);
-            if (mcaMatch) {
-              labNumber = mcaMatch[1];
-            } else {
-              labNumber = '-';
-            }
+          // Extract lab number from any lab name format
+          // Try to extract lab number at the end
+          const labNumMatch = originalLabName.match(/ Lab (\d+)$/);
+          if (labNumMatch) {
+            labNumber = labNumMatch[1];
+            // Remove " Lab X" from the end to get faculty name
+            facultyFromLab = originalLabName.replace(/ Lab \d+$/, '').trim();
           } else {
-            // For non-MCA labs, extract faculty and lab number
-            // Expected format: "Faculty Name Lab Number"
-            const labNameMatch = originalLabName.match(/^(.+) Lab (\d+)$/);
-            if (labNameMatch) {
-              facultyFromLab = labNameMatch[1];
-              labNumber = labNameMatch[2];
+            // Try to extract any number from the end
+            const anyNumMatch = originalLabName.match(/\s(\d+)$/);
+            if (anyNumMatch) {
+              labNumber = anyNumMatch[1];
+              facultyFromLab = originalLabName.replace(/\s\d+$/, '').trim();
             } else {
-              // Fallback for different formats
-              // Try to extract lab number at the end
-              const labNumMatch = originalLabName.match(/ Lab (\d+)$/);
-              if (labNumMatch) {
-                labNumber = labNumMatch[1];
-                // Remove " Lab X" from the end to get faculty name
-                facultyFromLab = originalLabName.replace(/ Lab \d+$/, '').trim();
-              } else {
-                // If we can't extract lab number, show the whole name
-                facultyFromLab = originalLabName;
-                labNumber = '-';
-              }
+              // If we can't extract lab number, show the whole name
+              facultyFromLab = originalLabName;
+              labNumber = '-';
             }
           }
         }
@@ -232,21 +222,30 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   // Apply date filter
   if (applyDateFilter) {
+    console.log('Apply filter button found, attaching event listener');
     applyDateFilter.addEventListener('click', () => {
+      console.log('Apply filter clicked', dateFrom.value, dateTo.value);
       fetchRecentBookings(dateFrom.value, dateTo.value);
     });
+  } else {
+    console.log('Apply filter button not found');
   }
   
   // Clear date filter
   if (clearDateFilter) {
+    console.log('Clear filter button found, attaching event listener');
     clearDateFilter.addEventListener('click', () => {
+      console.log('Clear filter clicked');
       dateFrom.valueAsDate = lastMonth;
       dateTo.valueAsDate = today;
       fetchRecentBookings();
     });
+  } else {
+    console.log('Clear filter button not found');
   }
   
   // Initialize dashboard
+  console.log('Initializing dashboard');
   fetchDashboardStats();
   fetchRecentBookings();
   

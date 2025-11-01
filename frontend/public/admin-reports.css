@@ -83,9 +83,10 @@ body {
   color: var(--gray-800);
   line-height: 1.6;
   min-height: 100vh;
-  padding: var(--space-6);
+  padding: var(--space-10);
   position: relative;
   overflow-x: hidden;
+  font-size: var(--font-size-lg);
 }
 
 /* Animated background elements */
@@ -112,11 +113,11 @@ body::before {
 
 /* Container */
 .container {
-  max-width: 1200px;
+  max-width: 2000px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
-  padding: var(--space-8);
+  padding: var(--space-12);
   border-radius: var(--radius-3xl);
   box-shadow: var(--shadow-xl);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -155,12 +156,12 @@ body::before {
 /* Heading */
 h1 {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-10);
   color: var(--gray-800);
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-3xl);
   font-weight: 800;
   position: relative;
-  padding-bottom: var(--space-4);
+  padding-bottom: var(--space-5);
 }
 
 h1::after {
@@ -204,6 +205,78 @@ h1::after {
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
+/* Status Filter */
+#statusFilter {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--gray-300);
+  font-size: var(--font-size-sm);
+  background: var(--white);
+  transition: var(--transition-normal);
+  min-width: 150px;
+  cursor: pointer;
+  font-weight: 500;
+  box-shadow: var(--shadow-sm);
+}
+
+#statusFilter:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+#statusFilter:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* Status Filter Options */
+#statusFilter option {
+  padding: var(--space-2);
+  font-size: var(--font-size-sm);
+}
+
+#statusFilter option[value="booked"] {
+  color: #2e7d32; /* Green for booked */
+  font-weight: 600;
+}
+
+#statusFilter option[value="completed"] {
+  color: #1565c0; /* Blue for completed */
+  font-weight: 600;
+}
+
+#statusFilter option[value="cancelled"] {
+  color: #c62828; /* Red for cancelled */
+  font-weight: 600;
+}
+
+#statusFilter option[value="no-show"] {
+  color: #ef6c00; /* Orange for no-show */
+  font-weight: 600;
+}
+
+/* Status Filter Visual Feedback */
+#statusFilter.status-booked {
+  border-color: #2e7d32;
+  box-shadow: 0 0 0 2px rgba(46, 125, 50, 0.2);
+}
+
+#statusFilter.status-completed {
+  border-color: #1565c0;
+  box-shadow: 0 0 0 2px rgba(21, 101, 192, 0.2);
+}
+
+#statusFilter.status-cancelled {
+  border-color: #c62828;
+  box-shadow: 0 0 0 2px rgba(198, 40, 40, 0.2);
+}
+
+#statusFilter.status-no-show {
+  border-color: #ef6c00;
+  box-shadow: 0 0 0 2px rgba(239, 108, 0, 0.2);
+}
+
 /* Buttons */
 .filters button {
   padding: var(--space-3) var(--space-6);
@@ -228,11 +301,6 @@ h1::after {
 
 #exportPDF {
   background: var(--secondary-gradient);
-  color: var(--white);
-}
-
-#exportCSV {
-  background: var(--success-gradient);
   color: var(--white);
 }
 
@@ -269,7 +337,7 @@ h1::after {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-8);
   background: var(--white);
   border-radius: var(--radius-2xl);
   overflow: hidden;
@@ -277,7 +345,19 @@ table {
   border: 1px solid var(--gray-200);
   animation: fadeIn 0.8s ease-out;
   text-align: center;
+  font-size: var(--font-size-base);
+  table-layout: fixed;
 }
+
+/* Set column widths for better readability */
+table th:nth-child(1), table td:nth-child(1) { width: 13%; } /* Name */
+table th:nth-child(2), table td:nth-child(2) { width: 11%; } /* Faculty */
+table th:nth-child(3), table td:nth-child(3) { width: 16%; } /* Faculty Email */
+table th:nth-child(4), table td:nth-child(4) { width: 9%; } /* Lab Number */
+table th:nth-child(5), table td:nth-child(5) { width: 9%; } /* Date */
+table th:nth-child(6), table td:nth-child(6) { width: 13%; } /* Time */
+table th:nth-child(7), table td:nth-child(7) { width: 11%; } /* Status */
+table th:nth-child(8), table td:nth-child(8) { width: 15%; } /* Booked At */
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -290,7 +370,7 @@ thead {
 }
 
 thead th {
-  padding: var(--space-5) var(--space-4);
+  padding: var(--space-4) var(--space-3);
   text-align: center;
   font-weight: 600;
   color: var(--white);
@@ -325,6 +405,7 @@ thead th:hover::before {
 tbody tr {
   border-bottom: 1px solid var(--gray-200);
   transition: var(--transition-normal);
+  height: 55px;
 }
 
 tbody tr:hover {
@@ -337,9 +418,71 @@ tbody tr:last-child {
 }
 
 tbody td {
-  padding: var(--space-4) var(--space-4);
+  padding: var(--space-3) var(--space-3);
   color: var(--gray-700);
   font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Status Badge Styling in Table */
+tbody td:nth-child(7) {
+  font-weight: 600;
+  text-transform: uppercase;
+  position: relative;
+}
+
+/* Status-specific colors */
+tbody td.status-booked {
+  color: #2e7d32; /* Green for booked */
+}
+
+tbody td.status-completed {
+  color: #1565c0; /* Blue for completed */
+}
+
+tbody td.status-cancelled {
+  color: #c62828; /* Red for cancelled */
+}
+
+tbody td.status-no-show {
+  color: #ef6c00; /* Orange for no-show */
+}
+
+tbody td.status-unknown {
+  color: #9e9e9e; /* Gray for unknown */
+}
+
+/* Status Badges */
+tbody td:nth-child(7)::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+tbody td.status-booked::before {
+  background-color: #2e7d32; /* Green for booked */
+}
+
+tbody td.status-completed::before {
+  background-color: #1565c0; /* Blue for completed */
+}
+
+tbody td.status-cancelled::before {
+  background-color: #c62828; /* Red for cancelled */
+}
+
+tbody td.status-no-show::before {
+  background-color: #ef6c00; /* Orange for no-show */
+}
+
+tbody td.status-unknown::before {
+  background-color: #9e9e9e; /* Gray for unknown */
 }
 
 /* Back Button */
@@ -418,7 +561,7 @@ tbody td {
   
   thead th,
   tbody td {
-    padding: var(--space-3) var(--space-2);
+    padding: var(--space-4) var(--space-3);
   }
 }
 
@@ -433,7 +576,7 @@ tbody td {
   
   thead th,
   tbody td {
-    padding: var(--space-2);
+    padding: var(--space-3);
     font-size: var(--font-size-xs);
   }
   

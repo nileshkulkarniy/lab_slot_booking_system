@@ -1,8 +1,13 @@
 // manage-labs.js
 
+// Store reference to original submit handler
+let isEditMode = false;
+let currentEditLabId = null;
+
 document.addEventListener('DOMContentLoaded', async () => {
   const labForm = document.getElementById('labForm');
   const labTableBody = document.getElementById('labTableBody');
+  const cancelEditButton = document.getElementById('cancelEdit');
   
   // Load labs on page load
   await loadLabs();
@@ -24,30 +29,64 @@ document.addEventListener('DOMContentLoaded', async () => {
     const labName = `${faculty} Lab ${labNumber}`;
     
     try {
-      // Send data to the server
-      const response = await fetch('/api/labs', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify({
-          name: labName,
-          description: `${faculty} Laboratory ${labNumber}`
-        })
-      });
+      let response, result;
       
-      const result = await response.json();
+      if (isEditMode && currentEditLabId) {
+        // Update existing lab
+        response = await fetch(`/api/labs/${currentEditLabId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: labName,
+            description: `${faculty} Laboratory ${labNumber}`
+          })
+        });
+        
+        result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Reset edit mode
+          isEditMode = false;
+          currentEditLabId = null;
+          
+          // Update button text and visibility
+          document.querySelector('button[type="submit"]').textContent = 'Add Lab';
+          cancelEditButton.style.display = 'none';
+          
+          // Show success message
+          showMessage('Lab updated successfully!', 'success');
+        }
+      } else {
+        // Create new lab
+        response = await fetch('/api/labs', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          },
+          body: JSON.stringify({
+            name: labName,
+            description: `${faculty} Laboratory ${labNumber}`
+          })
+        });
+        
+        result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Show success message
+          showMessage('Lab added successfully!', 'success');
+        }
+      }
       
       if (response.ok && result.success) {
-        // Reload labs to show the new one
+        // Reload labs to show the changes
         await loadLabs();
         
         // Reset form
         labForm.reset();
-        
-        // Show success message
-        showMessage('Lab added successfully!', 'success');
       } else {
         // Handle specific error cases
         if (response.status === 401) {
@@ -55,13 +94,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (response.status === 403) {
           showMessage('Insufficient privileges. Admin access required.', 'error');
         } else {
-          showMessage(result.error || 'Failed to add lab', 'error');
+          showMessage(result.error || `Failed to ${isEditMode ? 'update' : 'add'} lab`, 'error');
         }
       }
     } catch (error) {
-      console.error('Error adding lab:', error);
-      showMessage('Error adding lab. Please try again.', 'error');
+      console.error(`Error ${isEditMode ? 'updating' : 'adding'} lab:`, error);
+      showMessage(`Error ${isEditMode ? 'updating' : 'adding'} lab. Please try again.`, 'error');
     }
+  });
+  
+  // Handle cancel edit button
+  cancelEditButton.addEventListener('click', () => {
+    cancelEdit();
   });
 });
 
@@ -165,72 +209,13 @@ async function editLab(labId) {
       document.getElementById('faculty').value = faculty;
       document.getElementById('labNumber').value = labNumber;
       
-      // Change form submission to update mode
-      const labForm = document.getElementById('labForm');
-      const originalSubmitHandler = labForm.onsubmit;
+      // Set edit mode
+      isEditMode = true;
+      currentEditLabId = labId;
       
-      // Remove the original event listener
-      labForm.removeEventListener('submit', originalSubmitHandler);
-      
-      // Add new event listener for update
-      labForm.onsubmit = async function(e) {
-        e.preventDefault();
-        
-        const updatedFaculty = document.getElementById('faculty').value;
-        const updatedLabNumber = document.getElementById('labNumber').value;
-        
-        // Validate lab number selection
-        if (!updatedLabNumber) {
-          showMessage('Please select a lab number', 'error');
-          return;
-        }
-        
-        // Create lab name based on faculty and number
-        const updatedLabName = `${updatedFaculty} Lab ${updatedLabNumber}`;
-        
-        try {
-          // Send update request to the server
-          const updateResponse = await fetch(`/api/labs/${labId}`, {
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-              name: updatedLabName,
-              description: `${updatedFaculty} Laboratory ${updatedLabNumber}`
-            })
-          });
-          
-          const updateResult = await updateResponse.json();
-          
-          if (updateResponse.ok && updateResult.success) {
-            // Reload labs to show the changes
-            await loadLabs();
-            
-            // Reset form
-            labForm.reset();
-            
-            // Restore original submit handler
-            labForm.onsubmit = originalSubmitHandler;
-            
-            // Show success message
-            showMessage('Lab updated successfully!', 'success');
-          } else {
-            // Handle specific error cases
-            if (updateResponse.status === 401) {
-              showMessage('Authentication required. Please log in as admin.', 'error');
-            } else if (updateResponse.status === 403) {
-              showMessage('Insufficient privileges. Admin access required.', 'error');
-            } else {
-              showMessage(updateResult.error || 'Failed to update lab', 'error');
-            }
-          }
-        } catch (error) {
-          console.error('Error updating lab:', error);
-          showMessage('Error updating lab. Please try again.', 'error');
-        }
-      };
+      // Update button text and visibility
+      document.querySelector('button[type="submit"]').textContent = 'Update Lab';
+      document.getElementById('cancelEdit').style.display = 'inline-block';
       
       showMessage('Lab loaded for editing. Make changes and submit to update.', 'success');
     } else {
@@ -249,8 +234,24 @@ async function editLab(labId) {
   }
 }
 
+// Add cancel edit function
+function cancelEdit() {
+  // Reset form
+  document.getElementById('labForm').reset();
+  
+  // Reset edit mode
+  isEditMode = false;
+  currentEditLabId = null;
+  
+  // Update button text and visibility
+  document.querySelector('button[type="submit"]').textContent = 'Add Lab';
+  document.getElementById('cancelEdit').style.display = 'none';
+  
+  showMessage('Edit cancelled', 'info');
+}
+
 async function deleteLab(labId) {
-  if (confirm('Are you sure you want to delete this lab?')) {
+  if (confirm('Are you sure you want to delete this lab? This action cannot be undone.')) {
     try {
       // Send delete request to the server
       const response = await fetch(`/api/labs/${labId}`, {
@@ -329,6 +330,12 @@ style.textContent = `
     border: 1px solid rgba(240, 147, 251, 0.3);
   }
   
+  .message.info {
+    background: linear-gradient(135deg, rgba(102, 126, 234, 0.2), rgba(123, 102, 234, 0.2));
+    color: #1d4ed8;
+    border: 1px solid rgba(102, 126, 234, 0.3);
+  }
+  
   @keyframes slideDown {
     from {
       opacity: 0;
@@ -362,6 +369,45 @@ style.textContent = `
   
   option {
     padding: var(--space-2);
+  }
+  
+  /* Form actions styling */
+  .form-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .form-actions button {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .form-actions button[type="submit"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+  }
+  
+  .form-actions button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+  }
+  
+  .form-actions button#cancelEdit {
+    background: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+  
+  .form-actions button#cancelEdit:hover {
+    background: #e5e7eb;
+    transform: translateY(-2px);
   }
 `;
 document.head.appendChild(style);

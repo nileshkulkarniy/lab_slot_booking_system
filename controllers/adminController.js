@@ -156,7 +156,7 @@ const getAnalytics = async (req, res) => {
       }
     ]);
     
-    // Most popular labs
+    // Most popular labs - include deleted labs but mark them
     const popularLabs = await Booking.aggregate([
       {
         $match: {
@@ -185,10 +185,24 @@ const getAnalytics = async (req, res) => {
       {
         $unwind: '$labInfo'
       },
+      // Include all labs, even deleted ones, but mark them in the name
       {
         $group: {
           _id: '$labInfo._id',
-          labName: { $first: '$labInfo.name' },
+          labName: { 
+            $first: {
+              $concat: [
+                "$labInfo.name",
+                {
+                  $cond: [
+                    { $eq: ["$labInfo.isActive", false] },
+                    " (DELETED)",
+                    ""
+                  ]
+                }
+              ]
+            }
+          },
           bookingCount: { $sum: 1 }
         }
       },
@@ -234,39 +248,78 @@ const getAnalytics = async (req, res) => {
 const getRecentActivities = async (req, res) => {
   try {
     const { fromDate, toDate } = req.query;
+    console.log('Received date filter parameters:', { fromDate, toDate });
     
     // Build date query
     const dateQuery = {};
     if (fromDate || toDate) {
       dateQuery['slot.date'] = {};
       if (fromDate) {
-        dateQuery['slot.date'].$gte = new Date(fromDate);
+        // Set to beginning of the day
+        const fromDateObj = new Date(fromDate);
+        // Check if date is valid
+        if (isNaN(fromDateObj.getTime())) {
+          console.log('Invalid from date:', fromDate);
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid from date format'
+          });
+        }
+        fromDateObj.setHours(0, 0, 0, 0);
+        dateQuery['slot.date'].$gte = fromDateObj;
+        console.log('From date object:', fromDateObj);
       }
       if (toDate) {
-        dateQuery['slot.date'].$lte = new Date(toDate);
+        // Set to end of the day
+        const toDateObj = new Date(toDate);
+        // Check if date is valid
+        if (isNaN(toDateObj.getTime())) {
+          console.log('Invalid to date:', toDate);
+          return res.status(400).json({
+            success: false,
+            message: 'Invalid to date format'
+          });
+        }
+        toDateObj.setHours(23, 59, 59, 999);
+        dateQuery['slot.date'].$lte = toDateObj;
+        console.log('To date object:', toDateObj);
       }
     }
     
-    const recentBookings = await Booking.find()
+    console.log('Date query being used:', dateQuery);
+    
+    const recentBookings = await Booking.find(dateQuery)
       .populate('faculty', 'name email')
       .populate({
         path: 'slot',
         populate: {
           path: 'lab',
-          select: 'name'
+          select: 'name isActive'
         }
       })
       .sort({ bookedAt: -1 })
       .limit(10);
     
-    const activities = recentBookings.map(booking => ({
-      faculty: booking.faculty ? booking.faculty.name : 'Unknown Faculty',
-      lab: booking.slot && booking.slot.lab ? booking.slot.lab.name : 'Unknown Lab',
-      date: booking.slot ? formatDate(booking.slot.date) : 'Unknown Date',
-      timeSlot: booking.slot && booking.slot.startTime && booking.slot.endTime ? 
-        `${booking.slot.startTime} - ${booking.slot.endTime}` : 'Unknown Time',
-      status: booking.status || 'Unknown Status'
-    }));
+    // Show ALL bookings, including those from deleted labs, but mark deleted labs
+    const activities = recentBookings.map(booking => {
+      // Check if lab is deleted and add indicator
+      let labName = 'Unknown Lab';
+      if (booking.slot && booking.slot.lab) {
+        const isLabDeleted = booking.slot.lab.isActive === false;
+        labName = isLabDeleted ? 
+          `${booking.slot.lab.name} (DELETED)` : 
+          booking.slot.lab.name;
+      }
+      
+      return {
+        faculty: booking.faculty ? booking.faculty.name : 'Unknown Faculty',
+        lab: labName,
+        date: booking.slot ? formatDate(booking.slot.date) : 'Unknown Date',
+        timeSlot: booking.slot && booking.slot.startTime && booking.slot.endTime ? 
+          `${booking.slot.startTime} - ${booking.slot.endTime}` : 'Unknown Time',
+        status: booking.status || 'Unknown Status'
+      };
+    });
     
     res.json({
       success: true,

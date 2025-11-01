@@ -131,7 +131,7 @@ app.use('*', (req, res) => {
 });
 
 // --- Server Startup ---
-const PORT = process.env.PORT || 5002;
+const PORT = process.env.PORT || 5004;
 
 // Start server only after database connection is established
 const startServer = async () => {
@@ -139,9 +139,93 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
+    
+    // Start the booking status update task
+    startBookingStatusUpdateTask();
   } catch (err) {
     console.error('❌ Failed to start server:', err.message);
     process.exit(1);
+  }
+};
+
+// Function to update booking statuses based on slot completion times
+const startBookingStatusUpdateTask = () => {
+  const updateBookingStatuses = async () => {
+    try {
+      const Booking = require('./models/Booking');
+      const Slot = require('./models/Slot');
+      
+      // Get current date and time
+      const now = new Date();
+      
+      // Find all booked bookings with slots that have already passed
+      const bookingsToUpdate = await Booking.find({
+        status: 'booked',
+        slot: { $exists: true }
+      }).populate('slot');
+      
+      let updatedCount = 0;
+      
+      for (const booking of bookingsToUpdate) {
+        if (booking.slot && booking.slot.hasPassedCompletionTime()) {
+          booking.status = 'completed';
+          await booking.save();
+          updatedCount++;
+          console.log(`Updated booking ${booking._id} to completed`);
+        }
+      }
+      
+      if (updatedCount > 0) {
+        console.log(`✅ Updated ${updatedCount} bookings to completed status`);
+      }
+    } catch (error) {
+      console.error('❌ Error updating booking statuses:', error);
+    }
+  };
+  
+  // Run the task immediately when the server starts
+  updateBookingStatuses();
+  updateSlotStatuses();
+  
+  // Run the task every 30 minutes
+  setInterval(() => {
+    updateBookingStatuses();
+    updateSlotStatuses();
+  }, 30 * 60 * 1000);
+};
+
+// Function to update slot statuses based on completion times
+const updateSlotStatuses = async () => {
+  try {
+    const Slot = require('./models/Slot');
+    
+    // Get current date and time
+    const now = new Date();
+    
+    // Find all active slots that are not already completed
+    const slotsToUpdate = await Slot.find({
+      isActive: true,
+      status: { $ne: 'completed' }
+    });
+    
+    let updatedCount = 0;
+    
+    for (const slot of slotsToUpdate) {
+      // Check if the slot time has passed
+      if (slot.hasPassedCompletionTime()) {
+        // Update the slot status to completed
+        slot.status = 'completed';
+        await slot.save();
+        updatedCount++;
+        console.log(`Updated slot ${slot._id} to completed`);
+      }
+    }
+    
+    if (updatedCount > 0) {
+      console.log(`✅ Updated ${updatedCount} slots to completed status`);
+    }
+  } catch (error) {
+    console.error('❌ Error updating slot statuses:', error);
   }
 };
 

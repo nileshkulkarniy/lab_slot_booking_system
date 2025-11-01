@@ -27,6 +27,10 @@ const UserSchema = new mongoose.Schema({
     required: [true, 'Role is required'],
     default: 'faculty',
   },
+  department: {
+    type: String,
+    trim: true,
+  },
   profilePicture: {
     type: String,
     default: null, // Will store the filename/path of uploaded image

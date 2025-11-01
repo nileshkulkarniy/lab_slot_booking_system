@@ -82,7 +82,7 @@ exports.sendBookingConfirmation = async (userEmail, userName, labName, slotDate,
 // Send password reset email
 exports.sendPasswordReset = async (userEmail, userName, resetToken) => {
   const subject = 'Password Reset Request';
-  const resetURL = `${process.env.FRONTEND_URL || 'http://localhost:5002'}/reset-password?token=${resetToken}`;
+  const resetURL = `${process.env.FRONTEND_URL || `http://localhost:${process.env.PORT || 5003}`}/reset-password?token=${resetToken}`;
   
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

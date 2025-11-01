@@ -17,7 +17,6 @@ router.post('/book', verifyToken, isFaculty, bookingController.createBooking);
 router.put('/cancel/:bookingId', verifyToken, bookingController.cancelBooking);
 
 // ✅ EXPORT ROUTES (for admin)
-router.get('/export/csv', verifyToken, isAdmin, bookingController.exportCSV);
 router.get('/export/pdf', verifyToken, isAdmin, bookingController.exportPDF);
 
 module.exports = router;

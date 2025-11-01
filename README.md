@@ -26,7 +26,7 @@ A comprehensive web application for managing laboratory slot bookings in educati
 - Slot management (define time slots for labs)
 - Booking oversight (view, manage all bookings)
 - Reporting and analytics
-- Export data in CSV/PDF formats
+- Export data in PDF format
 
 ### Faculty Features
 - Account registration and authentication
@@ -38,11 +38,12 @@ A comprehensive web application for managing laboratory slot bookings in educati
 
 ### System Features
 - Real-time slot availability
-- Automatic slot status updates (available/full)
+- Automatic slot status updates (available/booked)
 - Role-based access control
 - Secure authentication with JWT
 - Responsive web design
 - Data validation and error handling
+- Global slot conflict prevention (only one slot per time period across all labs)
 
 ## Technology Stack
 
@@ -160,7 +161,6 @@ npm start
 - `DELETE /api/bookings/:id` - Cancel booking
 
 ### Reports
-- `GET /api/reports/export-csv` - Export bookings as CSV
 - `GET /api/reports/export-pdf` - Export bookings as PDF
 
 ## Database Schema
@@ -188,8 +188,9 @@ npm start
 - `endTime`: String (required, HH:MM format)
 - `capacity`: Number (copied from lab)
 - `bookedCount`: Number (default: 0)
-- `status`: String (enum: 'available', 'full', 'cancelled')
+- `status`: String (enum: 'available', 'booked', 'cancelled')
 - `isActive`: Boolean (default: true)
+- **Note**: Slots have a unique constraint on date, startTime, and endTime to prevent global conflicts across all labs
 
 ### Booking
 - `faculty`: ObjectId (reference to User)
@@ -331,6 +332,17 @@ npm start
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a pull request
 
+## Author
+
+**Nilesh Kulkarni**
+- Email: knilesh996@gmail.com
+- GitHub: [Nilesh Kulkarni](https://github.com/nileshkulkarniy)
+- Facebook: [Nilesh Kulkarni](https://www.facebook.com/nileshkulkarniyd)
+- Instagram: [Nilesh Kulkarni](https://www.instagram.com/nileshkulkarniy)
+- Twitter: [Nilesh Kulkarni](https://twitter.com/nileshkulkarniy)
+- LinkedIn: [Nilesh Kulkarni](https://www.linkedin.com/in/nileshkulkarniy)
+
+
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
@@ -339,12 +351,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Note**: This system was designed for educational institutions to efficiently manage laboratory bookings and reduce administrative overhead.
 
-## Author
-
-**Nilesh Kulkarni**
-- Email: knilesh996@gmail.com
-- GitHub: [@nileshkulkarniy](https://github.com/nileshkulkarniy)
-- Facebook: [Nilesh Kulkarni](https://www.facebook.com/nileshkulkarniyd)
-- Instagram: [@nileshkulkarniy](https://www.instagram.com/nileshkulkarniy)
-- Twitter: [@nileshkulkarniy](https://twitter.com/nileshkulkarniy)
-- LinkedIn: [Nilesh Kulkarni](https://www.linkedin.com/in/nileshkulkarniy)

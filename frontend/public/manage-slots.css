@@ -464,8 +464,14 @@ tbody tr:hover td {
   text-transform: uppercase;
 }
 
-.status-full {
+.status-booked {
   color: #FF9800;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.status-completed {
+  color: #2196F3;
   font-weight: bold;
   text-transform: uppercase;
 }

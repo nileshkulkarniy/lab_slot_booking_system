@@ -6,11 +6,12 @@ const Lab = require('../models/Lab');
 const { verifyToken, isAdmin } = require('../Middlewares/authMiddlewares');
 const { exportBookingData } = require('../utils/exportUtils');
 const { getReportData } = require('../utils/reportUtils');
+const path = require('path');
 
 // Get bookings with filters and pagination
 router.get('/', verifyToken, isAdmin, async (req, res) => {
   try {
-    const { page = 1, limit = 10, startDate, endDate, labId, status } = req.query;
+    const { page = 1, limit = 50, startDate, endDate, labId, status } = req.query;
     const skip = (parseInt(page) - 1) * parseInt(limit);
     
     // Build query
@@ -38,35 +39,94 @@ router.get('/', verifyToken, isAdmin, async (req, res) => {
     }
     
     // Get bookings with populated data
-    const bookings = await Booking.find(query)
-      .populate('faculty', 'name email')
-      .populate({
-        path: 'slot',
-        populate: {
-          path: 'lab',
-          select: 'name description location'
-        },
-        match: labId ? { lab: labId } : {}
-      })
-      .sort({ bookedAt: -1 })
-      .limit(parseInt(limit))
-      .skip(skip);
+    // First, get all bookings with faculty populated
+    let bookingsQuery = Booking.find(query).populate('faculty', 'name email');
     
-    // Filter out bookings where slot.lab doesn't match (if labId filter is applied)
-    const filteredBookings = bookings.filter(booking => booking.slot && booking.slot.lab);
+    // Apply lab filter at the booking level if labId is provided
+    if (labId) {
+      // We need to populate slot first to filter by lab
+      bookingsQuery = bookingsQuery.populate({
+        path: 'slot',
+        match: { lab: labId }
+      });
+    } else {
+      // If no lab filter, populate all slots
+      bookingsQuery = bookingsQuery.populate('slot');
+    }
+    
+    let bookings = await bookingsQuery.sort({ bookedAt: -1 });
+    
+    // Filter out bookings without slots
+    bookings = bookings.filter(booking => booking.slot);
+    
+    // Update booking statuses if needed
+    for (const booking of bookings) {
+      if (booking.status === 'booked' && booking.slot && booking.slot.hasPassedCompletionTime()) {
+        booking.status = 'completed';
+        await booking.save();
+      }
+    }
+    
+    // Apply pagination after filtering
+    const totalFilteredBookings = bookings.length;
+    bookings = bookings.slice(skip, skip + parseInt(limit));
+    
+    // Populate lab details for all bookings with slots
+    const bookingsWithSlotsAndLabs = await Booking.populate(bookings, {
+      path: 'slot.lab',
+      select: 'name description location isActive'
+    });
     
     // Format the response
-    const formattedBookings = filteredBookings.map(booking => ({
-      id: booking._id,
-      faculty_name: booking.faculty?.name || 'N/A',
-      faculty_email: booking.faculty?.email || 'N/A',
-      lab_name: booking.slot?.lab?.name || 'N/A',
-      lab_location: booking.slot?.lab?.location || 'N/A',
-      slot_date: booking.slot?.date || 'N/A',
-      slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
-      status: booking.status,
-      booking_date: booking.bookedAt
-    }));
+    const formattedBookings = bookingsWithSlotsAndLabs.map(booking => {
+      // Check if slot exists
+      if (!booking.slot) {
+        return {
+          id: booking._id,
+          faculty_name: booking.faculty?.name || 'N/A',
+          faculty_email: booking.faculty?.email || 'N/A',
+          lab_name: 'N/A',
+          lab_location: 'N/A',
+          slot_date: 'N/A',
+          slot_time: 'N/A',
+          status: booking.status,
+          booking_date: booking.bookedAt
+        };
+      }
+      
+      // Check if lab exists
+      if (!booking.slot.lab) {
+        return {
+          id: booking._id,
+          faculty_name: booking.faculty?.name || 'N/A',
+          faculty_email: booking.faculty?.email || 'N/A',
+          lab_name: 'N/A (Slot without lab)',
+          lab_location: 'N/A',
+          slot_date: booking.slot?.date || 'N/A',
+          slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
+          status: booking.status,
+          booking_date: booking.bookedAt
+        };
+      }
+      
+      // Check if lab is deleted and add indicator
+      const isLabDeleted = booking.slot.lab.isActive === false;
+      const labName = isLabDeleted ? 
+        `${booking.slot.lab.name} (DELETED)` : 
+        booking.slot.lab.name;
+      
+      return {
+        id: booking._id,
+        faculty_name: booking.faculty?.name || 'N/A',
+        faculty_email: booking.faculty?.email || 'N/A',
+        lab_name: labName,
+        lab_location: booking.slot.lab.location || 'N/A',
+        slot_date: booking.slot?.date || 'N/A',
+        slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
+        status: booking.status,
+        booking_date: booking.bookedAt
+      };
+    });
     
     const totalBookings = await Booking.countDocuments(query);
     
@@ -77,7 +137,7 @@ router.get('/', verifyToken, isAdmin, async (req, res) => {
         currentPage: parseInt(page),
         totalPages: Math.ceil(totalBookings / limit),
         totalBookings,
-        hasMore: skip + filteredBookings.length < totalBookings
+        hasMore: skip + formattedBookings.length < totalFilteredBookings
       }
     });
   } catch (err) {
@@ -95,20 +155,35 @@ router.get('/export/pdf', verifyToken, isAdmin, async (req, res) => {
     const { startDate, endDate, labId, status } = req.query;
     const data = await getReportData(startDate, endDate, labId, status);
     
+    // Add logging to debug the issue
+    console.log('PDF Export - Data received:', {
+      startDate,
+      endDate,
+      labId,
+      status,
+      dataLength: Array.isArray(data) ? data.length : 'Not an array',
+      sampleData: data.length > 0 ? data[0] : null
+    });
+    
     const filePath = await exportBookingData(data, 'pdf');
     
     // Check if file exists before sending
     const fs = require('fs');
     if (!fs.existsSync(filePath)) {
+      console.error('PDF Export - File not created:', filePath);
       return res.status(500).json({ 
         success: false,
         error: 'Export file was not created' 
       });
     }
     
-    res.download(filePath, (err) => {
+    // Set proper content type for actual PDF files
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${path.basename(filePath)}"`);
+    
+    res.download(filePath, path.basename(filePath), (err) => {
       if (err) {
-        console.error('Download error:', err);
+        console.error('PDF Export - Download error:', err);
         // Don't send another response if headers are already sent
         if (!res.headersSent) {
           res.status(500).json({ 
@@ -119,53 +194,12 @@ router.get('/export/pdf', verifyToken, isAdmin, async (req, res) => {
       }
     });
   } catch (err) {
-    console.error('PDF export error:', err);
+    console.error('PDF Export - Error:', err);
     // Don't send another response if headers are already sent
     if (!res.headersSent) {
       res.status(500).json({ 
         success: false,
         error: 'PDF export failed: ' + err.message
-      });
-    }
-  }
-});
-
-// Export CSV
-router.get('/export/csv', verifyToken, isAdmin, async (req, res) => {
-  try {
-    const { startDate, endDate, labId, status } = req.query;
-    const data = await getReportData(startDate, endDate, labId, status);
-    
-    const filePath = await exportBookingData(data, 'csv');
-    
-    // Check if file exists before sending
-    const fs = require('fs');
-    if (!fs.existsSync(filePath)) {
-      return res.status(500).json({ 
-        success: false,
-        error: 'Export file was not created' 
-      });
-    }
-    
-    res.download(filePath, (err) => {
-      if (err) {
-        console.error('Download error:', err);
-        // Don't send another response if headers are already sent
-        if (!res.headersSent) {
-          res.status(500).json({ 
-            success: false,
-            error: 'Failed to download CSV: ' + err.message
-          });
-        }
-      }
-    });
-  } catch (err) {
-    console.error('CSV export error:', err);
-    // Don't send another response if headers are already sent
-    if (!res.headersSent) {
-      res.status(500).json({ 
-        success: false,
-        error: 'CSV export failed: ' + err.message
       });
     }
   }
@@ -226,7 +260,7 @@ router.get('/stats', verifyToken, isAdmin, async (req, res) => {
       // Recent bookings
       Booking.countDocuments({ bookedAt: { $gte: startDate } }),
       
-      // Lab usage statistics
+      // Lab usage statistics - include deleted labs but mark them
       Booking.aggregate([
         { $match: { bookedAt: { $gte: startDate } } },
         {
@@ -247,10 +281,24 @@ router.get('/stats', verifyToken, isAdmin, async (req, res) => {
           }
         },
         { $unwind: '$labInfo' },
+        // Include all labs, even deleted ones, but mark them in the name
         {
           $group: {
             _id: '$labInfo._id',
-            labName: { $first: '$labInfo.name' },
+            labName: { 
+              $first: {
+                $concat: [
+                  "$labInfo.name",
+                  {
+                    $cond: [
+                      { $eq: ["$labInfo.isActive", false] },
+                      " (DELETED)",
+                      ""
+                    ]
+                  }
+                ]
+              }
+            },
             bookingCount: { $sum: 1 }
           }
         },

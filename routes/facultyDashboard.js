@@ -72,6 +72,14 @@ router.get('/', verifyToken, isFaculty, async (req, res) => {
       .sort({ bookedAt: -1 })
       .limit(5);
 
+    // Update booking statuses if needed
+    for (const booking of recentBookings) {
+      if (booking.status === 'booked' && booking.slot && booking.slot.hasPassedCompletionTime()) {
+        booking.status = 'completed';
+        await booking.save();
+      }
+    }
+
     // Get upcoming bookings
     const upcomingBookings = await Booking.find({
       faculty: facultyId,
@@ -87,6 +95,14 @@ router.get('/', verifyToken, isFaculty, async (req, res) => {
     })
     .sort({ 'slot.date': 1, 'slot.startTime': 1 })
     .limit(3);
+
+    // Update booking statuses for upcoming bookings if needed
+    for (const booking of upcomingBookings) {
+      if (booking.status === 'booked' && booking.slot && booking.slot.hasPassedCompletionTime()) {
+        booking.status = 'completed';
+        await booking.save();
+      }
+    }
 
     // Filter out bookings where slot was not found (due to date filter)
     const validUpcomingBookings = upcomingBookings.filter(booking => booking.slot);
@@ -188,6 +204,14 @@ router.get('/history', verifyToken, isFaculty, async (req, res) => {
         .skip(skip),
       Booking.countDocuments(query)
     ]);
+
+    // Update booking statuses if needed
+    for (const booking of bookings) {
+      if (booking.status === 'booked' && booking.slot && booking.slot.hasPassedCompletionTime()) {
+        booking.status = 'completed';
+        await booking.save();
+      }
+    }
 
     const formattedBookings = bookings.map(booking => ({
       id: booking._id,

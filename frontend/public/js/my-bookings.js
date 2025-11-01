@@ -1,4 +1,5 @@
 // my-bookings.js
+
 document.addEventListener('DOMContentLoaded', async () => {
   const token = localStorage.getItem('token');
   
@@ -79,6 +80,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  // Add formatDate function for consistent date formatting
+  function formatDate(date) {
+    // Check if date is valid
+    if (!date || !(date instanceof Date) || isNaN(date)) {
+      return 'Invalid Date';
+    }
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
   // Render bookings in table
   function renderBookings(bookings) {
     if (!bookingTable) return;
@@ -104,9 +118,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     bookings.forEach(booking => {
       const row = document.createElement('tr');
       
-      // Format date
-      const formattedDate = booking.slotDate ? formatDate(new Date(booking.slotDate)) : 'N/A';
-      const timeSlot = booking.startTime && booking.endTime ? `${booking.startTime} - ${booking.endTime}` : 'N/A';
+      // Format date with better error handling
+      let formattedDate = 'Unknown Date';
+      if (booking.slotDate) {
+        const dateObj = new Date(booking.slotDate);
+        if (!isNaN(dateObj)) {
+          formattedDate = formatDate(dateObj);
+        }
+      }
+      
+      const timeSlot = booking.startTime && booking.endTime ? `${booking.startTime} - ${booking.endTime}` : 'unknown';
       
       // Extract faculty and lab number from lab name
       // Expected format: "Faculty Lab Number" (e.g., "Computer Science Lab 1")
@@ -125,8 +146,48 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       
       // Determine if booking can be cancelled
-      const canCancel = booking.status === 'booked' && booking.slotDate && new Date(booking.slotDate) > new Date();
-      
+      // Check if booking is in 'booked' status and slot is more than 2 hours away
+      let canCancel = false;
+      if (booking.status === 'booked' && booking.slotDate) {
+        const slotDate = new Date(booking.slotDate);
+        
+        // Parse time correctly for 12-hour format (H:MM AM/PM)
+        let hours, minutes;
+        if (booking.startTime && (booking.startTime.includes('AM') || booking.startTime.includes('PM'))) {
+          // 12-hour format - convert to 24-hour for calculation
+          const [timePart, modifier] = booking.startTime.split(' ');
+          let [h, m] = timePart.split(':');
+          hours = parseInt(h, 10);
+          minutes = parseInt(m, 10);
+          
+          // Convert to 24-hour format for calculation
+          if (modifier === 'PM' && hours !== 12) {
+            hours = hours + 12;
+          }
+          if (modifier === 'AM' && hours === 12) {
+            hours = 0;
+          }
+        } else if (booking.startTime) {
+          // Assume 24-hour format or just H:MM
+          const [h, m] = booking.startTime.split(':');
+          hours = parseInt(h, 10);
+          minutes = parseInt(m, 10);
+        } else {
+          // Default to start of day if no time specified
+          hours = 0;
+          minutes = 0;
+        }
+        
+        slotDate.setHours(hours, minutes, 0, 0);
+        
+        const now = new Date();
+        const timeDiff = slotDate.getTime() - now.getTime();
+        const hoursDiff = timeDiff / (1000 * 3600);
+        
+        // Can cancel if slot is more than 2 hours away
+        canCancel = hoursDiff >= 2;
+      }
+
       row.innerHTML = `
         <td>${faculty.toUpperCase()}</td>
         <td>Lab ${labNumber.toUpperCase()}</td>
@@ -136,11 +197,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>
           ${canCancel ? 
             `<button class="cancel-btn" onclick="cancelBooking('${booking.id}')">Cancel</button>` : 
-            '<button class="cancel-btn" disabled>Cancelled</button>'
+            `<button class="cancel-btn" disabled>${booking.status === 'booked' ? 'Too Late to Cancel' : 'Cancelled'}</button>`
           }
         </td>
       `;
-      
+
       bookingTable.appendChild(row);
     });
   }
@@ -207,14 +268,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Add formatDate function for consistent date formatting
-  function formatDate(date) {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
-  }
-
   // Initialize bookings page
   fetchBookings();
 });
@@ -230,11 +283,6 @@ myBookingsStyle.textContent = `
   }
   
   .status-booked {
-    background-color: #4CAF50;
-    color: white;
-  }
-  
-  .status-confirmed {
     background-color: #4CAF50;
     color: white;
   }

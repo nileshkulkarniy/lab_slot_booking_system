@@ -3,6 +3,37 @@ document.addEventListener('DOMContentLoaded', () => {
   const filterBtn = document.getElementById('filterBtn');
   const startDate = document.getElementById('startDate');
   const endDate = document.getElementById('endDate');
+  const statusFilter = document.getElementById('statusFilter');
+
+  // Add visual feedback to status filter
+  if (statusFilter) {
+    // Initialize the styling based on the default value
+    function updateStatusFilterStyle() {
+      // Remove any existing styling classes
+      statusFilter.classList.remove('status-booked', 'status-completed', 'status-cancelled', 'status-no-show');
+      
+      // Add class based on selected value
+      switch(statusFilter.value) {
+        case 'booked':
+          statusFilter.classList.add('status-booked');
+          break;
+        case 'completed':
+          statusFilter.classList.add('status-completed');
+          break;
+        case 'cancelled':
+          statusFilter.classList.add('status-cancelled');
+          break;
+        case 'no-show':
+          statusFilter.classList.add('status-no-show');
+          break;
+      }
+    }
+    
+    statusFilter.addEventListener('change', updateStatusFilterStyle);
+    
+    // Initialize on page load
+    updateStatusFilterStyle();
+  }
 
   // Check authentication
   const token = localStorage.getItem('token');
@@ -12,21 +43,25 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
-  // Set default dates (last 30 days)
+  // Set default dates (last 30 days to next 30 days to capture future bookings)
   const today = new Date();
   const lastMonth = new Date();
   lastMonth.setDate(lastMonth.getDate() - 30);
+  const nextMonth = new Date();
+  nextMonth.setDate(nextMonth.getDate() + 30);
   
   startDate.valueAsDate = lastMonth;
-  endDate.valueAsDate = today;
+  endDate.valueAsDate = nextMonth;
 
-  async function fetchReports(start = '', end = '') {
+  async function fetchReports(start = '', end = '', status = 'all') {
     try {
       showLoading();
       
       const url = new URL('/api/reports', window.location.origin);
+      url.searchParams.append('limit', '50'); // Increase page size to 50 records
       if (start) url.searchParams.append('startDate', start);
       if (end) url.searchParams.append('endDate', end);
+      if (status && status !== 'all') url.searchParams.append('status', status);
       
       const response = await fetch(url, {
         headers: {
@@ -93,23 +128,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         if (labNumber !== 'N/A') {
-          // Handle MCA labs specially
-          if (/^MCA/i.test(labNumber)) {
-            const mcaMatch = labNumber.match(/MCA Lab (\d+)/i);
-            if (mcaMatch) {
-              labNumber = mcaMatch[1];
-            }
+          // Extract lab number
+          const labNameMatch = labNumber.match(/^(.+) Lab (\d+)$/);
+          if (labNameMatch) {
+            labNumber = labNameMatch[2];
           } else {
-            // For non-MCA labs, extract lab number
-            const labNameMatch = labNumber.match(/^(.+) Lab (\d+)$/);
-            if (labNameMatch) {
-              labNumber = labNameMatch[2];
-            } else {
-              // Fallback for different formats
-              const labNumMatch = labNumber.match(/ Lab (\d+)$/);
-              if (labNumMatch) {
-                labNumber = labNumMatch[1];
-              }
+            // Fallback for different formats
+            const labNumMatch = labNumber.match(/ Lab (\d+)$/);
+            if (labNumMatch) {
+              labNumber = labNumMatch[1];
             }
           }
         }
@@ -122,8 +149,8 @@ document.addEventListener('DOMContentLoaded', () => {
           <td>${escapeHtml(labNumber)}</td>
           <td>${formatDate(row.slot_date)}</td>
           <td>${escapeHtml(row.slot_time || 'N/A')}</td>
-          <td>${escapeHtml(row.status || 'N/A')}</td>
-          <td>${formatDateTime(row.booking_date)}</td>
+          <td class="status-${row.status || 'unknown'}">${escapeHtml(formatStatus(row.status) || 'N/A')}</td>
+          <td style="font-size: 0.9rem;">${formatDateTime(row.booking_date)}</td>
         `;
         reportTableBody.appendChild(tr);
       } catch (error) {
@@ -136,26 +163,77 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   filterBtn.addEventListener('click', () => {
-    fetchReports(startDate.value, endDate.value);
+    fetchReports(startDate.value, endDate.value, statusFilter.value);
   });
 
   // PDF export
-  document.getElementById('exportPDF').addEventListener('click', () => {
-    const url = new URL('/api/reports/export/pdf', window.location.origin);
-    if (startDate.value) url.searchParams.append('startDate', startDate.value);
-    if (endDate.value) url.searchParams.append('endDate', endDate.value);
-    
-    window.open(`${url.toString()}`, '_blank');
+  document.getElementById('exportPDF').addEventListener('click', async () => {
+    try {
+      const url = new URL('/api/reports/export/pdf', window.location.origin);
+      url.searchParams.append('limit', '1000'); // Increase limit for exports
+      if (startDate.value) url.searchParams.append('startDate', startDate.value);
+      if (endDate.value) url.searchParams.append('endDate', endDate.value);
+      if (statusFilter.value && statusFilter.value !== 'all') url.searchParams.append('status', statusFilter.value);
+      
+      // Fix: Handle PDF download properly with authentication
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login first');
+        window.location.href = 'admin-login.html';
+        return;
+      }
+      
+      // Alternative approach: Use fetch API to get the file and trigger download
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to export PDF: ${response.status} ${response.statusText}`);
+      }
+      
+      // Get the filename from the response headers if available
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = 'report.pdf';
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+      
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(blobUrl);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      alert('Failed to export PDF: ' + error.message);
+    }
   });
 
-  // CSV export
-  document.getElementById('exportCSV').addEventListener('click', () => {
-    const url = new URL('/api/reports/export/csv', window.location.origin);
-    if (startDate.value) url.searchParams.append('startDate', startDate.value);
-    if (endDate.value) url.searchParams.append('endDate', endDate.value);
+  // Utility function to format status
+  function formatStatus(status) {
+    if (!status) return 'N/A';
     
-    window.open(`${url.toString()}`, '_blank');
-  });
+    // Convert status to proper case
+    const statusMap = {
+      'booked': 'Booked',
+      'completed': 'Completed',
+      'cancelled': 'Cancelled',
+      'no-show': 'No Show'
+    };
+    
+    return statusMap[status.toLowerCase()] || status;
+  }
 
   // Utility function to escape HTML
   function escapeHtml(text) {
@@ -219,7 +297,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
       const year = date.getFullYear();
-      return `${day}/${month}/${year} ` + date.toLocaleTimeString();
+      // Format time components
+      const hours = date.getHours();
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
+      // Convert to 12-hour format
+      const period = hours >= 12 ? 'PM' : 'AM';
+      const displayHours = hours % 12 || 12;
+      return `${day}/${month}/${year} ${displayHours}:${minutes}:${seconds} ${period}`;
     } catch (error) {
       console.error('Error formatting date time:', error);
       return 'N/A';

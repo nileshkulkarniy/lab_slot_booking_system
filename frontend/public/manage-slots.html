@@ -37,12 +37,28 @@
         <div class="form-row">
           <div class="form-group">
             <label for="slotStartTime">Start Time</label>
-            <input type="time" id="slotStartTime" required />
+            <div class="time-input-container">
+              <input type="number" id="startHour" min="1" max="12" placeholder="HH" class="time-input" maxlength="2">
+              <span class="time-separator">:</span>
+              <input type="number" id="startMinute" min="0" max="59" placeholder="MM" class="time-input" maxlength="2">
+              <select id="startPeriod" class="period-select">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
           </div>
           
           <div class="form-group">
             <label for="slotEndTime">End Time</label>
-            <input type="time" id="slotEndTime" required />
+            <div class="time-input-container">
+              <input type="number" id="endHour" min="1" max="12" placeholder="HH" class="time-input" maxlength="2">
+              <span class="time-separator">:</span>
+              <input type="number" id="endMinute" min="0" max="59" placeholder="MM" class="time-input" maxlength="2">
+              <select id="endPeriod" class="period-select">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+              </select>
+            </div>
           </div>
         </div>
         
@@ -78,5 +94,34 @@
   </div>
 
   <script src="js/manage-slots.js"></script>
+  <style>
+    .time-input-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .time-input {
+      width: 70px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      text-align: center;
+      font-size: 16px;
+    }
+    
+    .time-separator {
+      font-weight: bold;
+      font-size: 18px;
+    }
+    
+    .period-select {
+      width: 100px;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+  </style>
 </body>
 </html>

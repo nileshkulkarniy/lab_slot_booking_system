@@ -393,11 +393,6 @@ tbody td {
   color: var(--white);
 }
 
-.export-buttons button:last-child {
-  background: var(--secondary-gradient);
-  color: var(--white);
-}
-
 .export-buttons button:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-lg);

@@ -25,33 +25,93 @@ async function getReportData(startDate, endDate, labId, status) {
     }
     
     // Get bookings with populated data
-    const bookings = await Booking.find(query)
-      .populate('faculty', 'name email')
-      .populate({
-        path: 'slot',
-        populate: {
-          path: 'lab',
-          select: 'name description location'
-        },
-        match: labId ? { lab: labId } : {}
-      })
-      .sort({ bookedAt: -1 });
+    // First, get all bookings with faculty populated
+    let bookingsQuery = Booking.find(query).populate('faculty', 'name email department');
     
-    // Filter out bookings where slot.lab doesn't match (if labId filter is applied)
-    const filteredBookings = bookings.filter(booking => booking.slot && booking.slot.lab);
+    // Apply lab filter at the booking level if labId is provided
+    if (labId) {
+      // We need to populate slot first to filter by lab
+      bookingsQuery = bookingsQuery.populate({
+        path: 'slot',
+        match: { lab: labId }
+      });
+    } else {
+      // If no lab filter, populate all slots
+      bookingsQuery = bookingsQuery.populate('slot');
+    }
+    
+    let bookings = await bookingsQuery.sort({ bookedAt: -1 });
+    
+    // Filter out bookings without slots
+    bookings = bookings.filter(booking => booking.slot);
+    
+    // Update booking statuses if needed
+    for (const booking of bookings) {
+      if (booking.status === 'booked' && booking.slot && booking.slot.hasPassedCompletionTime()) {
+        booking.status = 'completed';
+        await booking.save();
+      }
+    }
+    
+    // Populate lab details for all bookings with slots
+    const bookingsWithSlotsAndLabs = await Booking.populate(bookings, {
+      path: 'slot.lab',
+      select: 'name description location isActive'
+    });
     
     // Format the response
-    const formattedBookings = filteredBookings.map(booking => ({
-      id: booking._id,
-      faculty_name: booking.faculty?.name || 'N/A',
-      faculty_email: booking.faculty?.email || 'N/A',
-      lab_name: booking.slot?.lab?.name || 'N/A',
-      lab_location: booking.slot?.lab?.location || 'N/A',
-      slot_date: booking.slot?.date || 'N/A',
-      slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
-      status: booking.status,
-      booking_date: booking.bookedAt
-    }));
+    const formattedBookings = bookingsWithSlotsAndLabs.map(booking => {
+      // Check if slot exists
+      if (!booking.slot) {
+        return {
+          id: booking._id,
+          faculty_name: booking.faculty?.name || 'N/A',
+          faculty_department: booking.faculty?.department || 'N/A',
+          faculty_email: booking.faculty?.email || 'N/A',
+          lab_name: 'N/A',
+          lab_location: 'N/A',
+          slot_date: 'N/A',
+          slot_time: 'N/A',
+          status: booking.status,
+          booking_date: booking.bookedAt
+        };
+      }
+      
+      // Check if lab exists
+      if (!booking.slot.lab) {
+        return {
+          id: booking._id,
+          faculty_name: booking.faculty?.name || 'N/A',
+          faculty_department: booking.faculty?.department || 'N/A',
+          faculty_email: booking.faculty?.email || 'N/A',
+          lab_name: 'N/A (Slot without lab)',
+          lab_location: 'N/A',
+          slot_date: booking.slot?.date || 'N/A',
+          slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
+          status: booking.status,
+          booking_date: booking.bookedAt
+        };
+      }
+      
+      // Check if lab is deleted and add indicator
+      const isLabDeleted = booking.slot.lab.isActive === false;
+      const labName = isLabDeleted ? 
+        `${booking.slot.lab.name} (DELETED)` : 
+        booking.slot.lab.name;
+      
+      return {
+        id: booking._id,
+        faculty_name: booking.faculty?.name || 'N/A',
+        faculty_department: booking.faculty?.department || 'N/A',
+        faculty_email: booking.faculty?.email || 'N/A',
+        lab_name: labName,
+        lab_location: booking.slot.lab.location || 'N/A',
+        slot_date: booking.slot?.date || 'N/A',
+        slot_time: booking.slot ? `${booking.slot.startTime} - ${booking.slot.endTime}` : 'N/A',
+        status: booking.status,
+        booking_date: booking.bookedAt
+      };
+    });
     
     return formattedBookings;
   } catch (error) {

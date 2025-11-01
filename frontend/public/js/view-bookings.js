@@ -192,7 +192,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       return 'Unknown Date';
     }
   }
-
+  
   // Apply date filters to bookings
   function applyDateFilter() {
     const dateFrom = document.getElementById('dateFrom').value;
@@ -248,8 +248,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   // Export bookings (if needed)
-  window.exportBookings = async function(format = 'csv') {
+  window.exportBookings = async function(format = 'pdf') {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login first');
+        window.location.href = '/admin-login.html';
+        return;
+      }
+      
       const response = await fetch(`/api/bookings/export/${format}`, {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -264,18 +271,30 @@ document.addEventListener('DOMContentLoaded', async () => {
           window.location.href = '/admin-login.html';
           return;
         }
-        throw new Error(`Failed to export bookings: ${response.status} ${response.statusText}`);
+        
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to export bookings: ${response.status} ${response.statusText}`);
       }
       
-      // Handle file download
+      // Get the filename from the response headers if available
+      const contentDisposition = response.headers.get('Content-Disposition');
+      let filename = `bookings-${new Date().toISOString().split('T')[0]}.${format}`;
+      if (contentDisposition) {
+        const filenameMatch = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/);
+        if (filenameMatch && filenameMatch[1]) {
+          filename = filenameMatch[1].replace(/['"]/g, '');
+        }
+      }
+      
+      // Handle file download properly
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
+      const blobUrl = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
-      a.download = `bookings-${new Date().toISOString().split('T')[0]}.${format}`;
+      a.href = blobUrl;
+      a.download = filename;
       document.body.appendChild(a);
       a.click();
-      window.URL.revokeObjectURL(url);
+      window.URL.revokeObjectURL(blobUrl);
       document.body.removeChild(a);
     } catch (error) {
       console.error('Error exporting bookings:', error);

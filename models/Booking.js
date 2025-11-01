@@ -52,13 +52,27 @@ BookingSchema.post('save', async function(doc) {
   const slot = await Slot.findById(doc.slot);
   if (!slot) return;
   
+  console.log('Booking post-save hook triggered:', {
+    bookingId: doc._id,
+    status: doc.status,
+    slotId: doc.slot,
+    oldBookedCount: slot.bookedCount
+  });
+  
   if (doc.status === 'booked') {
     // Increment booked count when booking is made
     slot.bookedCount = (slot.bookedCount || 0) + 1;
+  } else if (doc.status === 'cancelled') {
+    // Decrement booked count when booking is cancelled
+    slot.bookedCount = Math.max(0, (slot.bookedCount || 0) - 1);
   }
+  
+  console.log('Updating slot bookedCount to:', slot.bookedCount);
   
   // Save the slot to trigger the pre-save hook that updates status
   await slot.save();
+  
+  console.log('Slot saved with status:', slot.status);
 });
 
 // Update slot booking count and status after booking is removed

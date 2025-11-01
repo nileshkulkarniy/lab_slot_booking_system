@@ -45,7 +45,7 @@ async function loadLabs() {
           const futureSlots = slots.filter(slot => {
             const slotDate = new Date(slot.date);
             slotDate.setHours(0, 0, 0, 0);
-            return slotDate >= today;
+            return slotDate >= today && slot.isActive;
           });
           
           // Get time information for all future slots with their availability status
@@ -54,12 +54,19 @@ async function loadLabs() {
             startTime: slot.startTime,
             endTime: slot.endTime,
             // For available page, consider a slot available based on time slot status, capacity, and booking count
-            isAvailable: slot.isAvailable,
+            isAvailable: slot.isAvailable && slot.status === 'available',
             status: slot.status,
             // Add booked count and capacity to identify booked slots
             bookedCount: slot.currentBookings || 0,
             capacity: slot.capacity || 0
           }));
+          
+          // Log slot information for debugging
+          console.log('Lab slot information:', {
+            labId: lab._id,
+            labName: lab.name,
+            slots: slotTimes
+          });
           
           return {
             ...lab,
@@ -74,8 +81,15 @@ async function loadLabs() {
         };
       }));
       
+      // Filter labs to only show active labs (don't filter by slot availability)
+      // This ensures all active labs are shown, with clear indication of slot availability
+      const activeLabs = enhancedLabs.filter(lab => lab.isActive !== false);
+      
+      // Log filtered labs for debugging
+      console.log('Active labs:', activeLabs);
+      
       // Render labs
-      renderLabs(enhancedLabs);
+      renderLabs(activeLabs);
     } else {
       throw new Error(result.error || 'Failed to fetch labs');
     }
@@ -93,6 +107,9 @@ function renderLabs(labs) {
     labsContainer.removeChild(labsContainer.firstChild);
   }
   
+  // Log labs for debugging
+  console.log('Rendering labs:', labs);
+  
   if (labs.length === 0) {
     const emptyState = document.createElement('div');
     emptyState.className = 'empty-state';
@@ -102,8 +119,13 @@ function renderLabs(labs) {
       <p>There are currently no labs available for booking.</p>
     `;
     labsContainer.appendChild(emptyState);
+    // Hide pagination when no labs
+    document.querySelector('.pagination').style.display = 'none';
     return;
   }
+  
+  // Show pagination when labs exist
+  document.querySelector('.pagination').style.display = 'flex';
   
   // Create lab cards
   labs.forEach(lab => {
@@ -136,23 +158,13 @@ function renderLabs(labs) {
         
         if (slot.isAvailable) {
           // Slot is available
-          if (slot.capacity > 0 && slot.bookedCount >= slot.capacity) {
-            // This shouldn't happen with our new logic, but just in case
-            statusClass = 'slot-booked';
-            statusText = 'Full';
-          } else if (slot.bookedCount > 0) {
-            // Slot has some bookings but still available
-            statusClass = 'slot-booked';
-            statusText = `Booked (${slot.bookedCount}/${slot.capacity || '∞'})`;
-          } else {
-            // Slot is completely free
-            statusClass = 'slot-available';
-            statusText = 'Available';
-          }
+          statusClass = 'slot-available';
+          statusText = 'available';
         } else {
           // Slot is not available (cancelled, full, etc.)
           statusClass = 'slot-booked';
-          statusText = slot.status.charAt(0).toUpperCase() + slot.status.slice(1);
+          // Show the actual status instead of always showing "Booked"
+          statusText = slot.status.toLowerCase();
         }
         
         timeInfo += `<li class="${statusClass}">${slot.date} ${slot.startTime}-${slot.endTime} [${statusText}]</li>`;
@@ -161,6 +173,9 @@ function renderLabs(labs) {
         timeInfo += `<li>+${lab.slotTimes.length - 5} more slots</li>`;
       }
       timeInfo += '</ul></div>';
+    } else {
+      // No slots available for this lab
+      timeInfo = '<div class="lab-time-info"><strong>Slot Times:</strong><ul><li class="slot-booked">No slots currently available</li></ul></div>';
     }
     
     const labCard = document.createElement('div');
@@ -176,6 +191,9 @@ function renderLabs(labs) {
       `;
     }
     
+    // Determine if we should enable the book button
+    const hasAvailableSlots = lab.slotTimes && lab.slotTimes.some(slot => slot.isAvailable);
+    
     labCard.innerHTML = `
       <div class="lab-header">
         <h3>${faculty.toUpperCase()} <span class="lab-number">Lab ${labNumber}</span></h3>
@@ -186,8 +204,8 @@ function renderLabs(labs) {
         ${timeInfo}
         ${equipmentInfo}
       </div>
-      <button class="book-btn" onclick="bookLab('${lab._id}')">
-        Book Slot
+      <button class="book-btn" onclick="bookLab('${lab._id}')" ${!hasAvailableSlots ? 'disabled' : ''}>
+        ${!hasAvailableSlots ? 'No Slots Available' : 'Book Slot'}
       </button>
     `;
     
@@ -211,6 +229,18 @@ function formatDate(date) {
 // Add event listeners when DOM is loaded
 document.addEventListener('DOMContentLoaded', async () => {
   await loadLabs(); // Load labs on page load
+  
+  // Add refresh button event listener
+  const refreshBtn = document.getElementById('refreshBtn');
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', async () => {
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = 'Refreshing...';
+      await loadLabs();
+      refreshBtn.disabled = false;
+      refreshBtn.textContent = 'Refresh';
+    });
+  }
 });
 
 // Add some basic styles for the lab cards
@@ -221,6 +251,27 @@ style.textContent = `
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     margin-top: 20px;
+  }
+  
+  .refresh-btn {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s;
+  }
+  
+  .refresh-btn:hover:not(:disabled) {
+    background: #45a049;
+  }
+  
+  .refresh-btn:disabled {
+    background: #cccccc;
+    cursor: not-allowed;
   }
   
   .lab-card {

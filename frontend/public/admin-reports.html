@@ -12,9 +12,15 @@
     <div class="filters">
       <input type="date" id="startDate" />
       <input type="date" id="endDate" />
+      <select id="statusFilter">
+        <option value="all">All Statuses</option>
+        <option value="booked">Booked</option>
+        <option value="completed">Completed</option>
+        <option value="cancelled">Cancelled</option>
+       
+      </select>
       <button id="filterBtn">Filter</button>
       <button id="exportPDF">Export PDF</button>
-      <button id="exportCSV">Export CSV</button>
     </div>
     <table>
       <thead>

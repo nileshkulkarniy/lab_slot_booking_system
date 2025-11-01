@@ -1,4 +1,5 @@
 // manage-slots.js
+// This file handles the management of lab slots with manual time input and AM/PM dropdown
 
 // Track if we're in edit mode
 let currentEditSlotId = null;
@@ -45,6 +46,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   const today = new Date().toISOString().split('T')[0];
   document.getElementById('slotDate').min = today;
   
+  // Add input validation for time fields
+  const startHour = document.getElementById('startHour');
+  const startMinute = document.getElementById('startMinute');
+  const endHour = document.getElementById('endHour');
+  const endMinute = document.getElementById('endMinute');
+  
+  // Add input validation to limit to 2 digits
+  startHour.addEventListener('input', limitDigits);
+  startMinute.addEventListener('input', limitDigits);
+  endHour.addEventListener('input', limitDigits);
+  endMinute.addEventListener('input', limitDigits);
+  
+  // Add leading zero formatting when user leaves the field
+  startHour.addEventListener('blur', formatHour);
+  startMinute.addEventListener('blur', formatMinute);
+  endHour.addEventListener('blur', formatHour);
+  endMinute.addEventListener('blur', formatMinute);
+  
   // Load labs and slots on page load
   await loadLabs();
   await loadSlots();
@@ -55,20 +74,65 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     const labId = document.getElementById('slotLab').value;
     const date = document.getElementById('slotDate').value;
-    const startTime = document.getElementById('slotStartTime').value;
-    const endTime = document.getElementById('slotEndTime').value;
+    
+    // Get time values
+    const startHour = document.getElementById('startHour').value;
+    const startMinute = document.getElementById('startMinute').value;
+    const startPeriod = document.getElementById('startPeriod').value;
+    
+    const endHour = document.getElementById('endHour').value;
+    const endMinute = document.getElementById('endMinute').value;
+    const endPeriod = document.getElementById('endPeriod').value;
     
     // Validate form
-    if (!labId || !date || !startTime || !endTime) {
+    if (!labId || !date || !startHour || !startMinute || !endHour || !endMinute) {
       showMessage('Please fill in all fields', 'error');
       return;
     }
     
-    // Validate time
-    if (startTime >= endTime) {
-      showMessage('End time must be after start time', 'error');
+    // Validate that fields are not just whitespace
+    if (startHour.trim() === '' || startMinute.trim() === '' || endHour.trim() === '' || endMinute.trim() === '') {
+      showMessage('Please fill in all time fields', 'error');
       return;
     }
+    
+    // Validate time values
+    const startHourNum = parseInt(startHour);
+    const startMinuteNum = parseInt(startMinute);
+    const endHourNum = parseInt(endHour);
+    const endMinuteNum = parseInt(endMinute);
+    
+    if (isNaN(startHourNum) || startHourNum < 1 || startHourNum > 12) {
+      showMessage('Start hour must be between 1 and 12', 'error');
+      return;
+    }
+    
+    if (isNaN(startMinuteNum) || startMinuteNum < 0 || startMinuteNum > 59) {
+      showMessage('Start minutes must be between 0 and 59', 'error');
+      return;
+    }
+    
+    if (isNaN(endHourNum) || endHourNum < 1 || endHourNum > 12) {
+      showMessage('End hour must be between 1 and 12', 'error');
+      return;
+    }
+    
+    if (isNaN(endMinuteNum) || endMinuteNum < 0 || endMinuteNum > 59) {
+      showMessage('End minutes must be between 0 and 59', 'error');
+      return;
+    }
+    
+    // Format time strings in 12-hour format
+    const startTime = `${startHour}:${startMinute} ${startPeriod}`;
+    const endTime = `${endHour}:${endMinute} ${endPeriod}`;
+    
+    // Log the values being sent for debugging
+    console.log('Sending slot data:', { 
+      lab: labId, 
+      date: date, 
+      startTime: startTime, 
+      endTime: endTime 
+    });
     
     try {
       let response;
@@ -140,12 +204,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         } else if (response.status === 403) {
           showMessage('Insufficient privileges. Admin access required.', 'error');
         } else {
-          showMessage(result.error || `Failed to ${currentEditSlotId ? 'update' : 'add'} slot`, 'error');
+          // Show specific validation error messages from backend
+          const errorMessage = result.error || `Failed to ${currentEditSlotId ? 'update' : 'add'} slot`;
+          showMessage(errorMessage, 'error');
         }
       }
+      
     } catch (error) {
       console.error(`Error ${currentEditSlotId ? 'updating' : 'adding'} slot:`, error);
-      showMessage(`Error ${currentEditSlotId ? 'updating' : 'adding'} slot. Please try again.`, 'error');
+      // Check if it's a conflict error
+      if (error && error.message && error.message.includes('conflict')) {
+        showMessage('Time slot conflict detected. Global conflict prevention is enabled - only one slot can exist for any given time period across all labs.', 'error');
+      } else {
+        showMessage(`Error ${currentEditSlotId ? 'updating' : 'adding'} slot. Please try again.`, 'error');
+      }
     }
   });
 });
@@ -398,8 +470,28 @@ async function editSlot(slotId) {
       // Populate the form with slot data
       document.getElementById('slotLab').value = slot.lab._id;
       document.getElementById('slotDate').value = new Date(slot.date).toISOString().split('T')[0];
-      document.getElementById('slotStartTime').value = slot.startTime;
-      document.getElementById('slotEndTime').value = slot.endTime;
+      
+      // Parse time components from 12-hour format (H:MM AM/PM)
+      const startTimeParts = slot.startTime.split(' ');
+      const startHourMinute = startTimeParts[0] ? startTimeParts[0].split(':') : ['', ''];
+      const startHour = startHourMinute[0] || '';
+      const startMinute = startHourMinute[1] || '';
+      const startPeriod = (startTimeParts[1] || 'AM').toUpperCase();
+      
+      const endTimeParts = slot.endTime.split(' ');
+      const endHourMinute = endTimeParts[0] ? endTimeParts[0].split(':') : ['', ''];
+      const endHour = endHourMinute[0] || '';
+      const endMinute = endHourMinute[1] || '';
+      const endPeriod = (endTimeParts[1] || 'AM').toUpperCase();
+      
+      // Set values in input fields
+      document.getElementById('startHour').value = startHour;
+      document.getElementById('startMinute').value = startMinute;
+      document.getElementById('startPeriod').value = startPeriod;
+      
+      document.getElementById('endHour').value = endHour;
+      document.getElementById('endMinute').value = endMinute;
+      document.getElementById('endPeriod').value = endPeriod;
       
       // Set edit mode
       currentEditSlotId = slotId;
@@ -435,6 +527,15 @@ async function editSlot(slotId) {
 function cancelEdit() {
   // Reset form
   document.getElementById('slotForm').reset();
+  
+  // Clear time input fields
+  document.getElementById('startHour').value = '';
+  document.getElementById('startMinute').value = '';
+  document.getElementById('startPeriod').value = 'AM';
+  
+  document.getElementById('endHour').value = '';
+  document.getElementById('endMinute').value = '';
+  document.getElementById('endPeriod').value = 'AM';
   
   // Reset edit mode
   currentEditSlotId = null;
@@ -545,6 +646,53 @@ function formatDate(dateString) {
   const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+}
+
+// Format hour input to have leading zero if needed
+function formatHour() {
+  if (this.value && this.value.length === 1) {
+    this.value = '0' + this.value;
+  }
+  
+  // Validate hour range
+  const hour = parseInt(this.value);
+  if (this.value && (hour < 1 || hour > 12)) {
+    showMessage('Hour must be between 1 and 12', 'error');
+    this.focus();
+  }
+}
+
+// Format minute input to have leading zero if needed
+function formatMinute() {
+  if (this.value && this.value.length === 1) {
+    this.value = '0' + this.value;
+  }
+  
+  // Validate minute range
+  const minute = parseInt(this.value);
+  if (this.value && (minute < 0 || minute > 59)) {
+    showMessage('Minutes must be between 0 and 59', 'error');
+    this.focus();
+  }
+}
+
+// Limit input to 2 digits
+function limitDigits() {
+  if (this.value.length > 2) {
+    this.value = this.value.slice(0, 2);
+  }
+  
+  // Remove any non-numeric characters
+  this.value = this.value.replace(/[^0-9]/g, '');
+}
+
+// Validate 12-hour time format (H:MM AM/PM)
+function isValid12HourFormat(timeStr) {
+  if (!timeStr) return false;
+  
+  // Regular expression for 12-hour time format
+  const timeRegex = /^(1[0-2]|0?[1-9]):([0-5][0-9])\s?(AM|PM)$/i;
+  return timeRegex.test(timeStr.trim());
 }
 
 function showMessage(message, type) {
