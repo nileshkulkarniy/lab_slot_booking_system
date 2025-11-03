@@ -351,3 +351,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Note**: This system was designed for educational institutions to efficiently manage laboratory bookings and reduce administrative overhead.
 
+#   l a b _ s l o t _ b o o k i n g _ s y s t e m  
+ 
