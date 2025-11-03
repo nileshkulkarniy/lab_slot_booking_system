@@ -35,3 +35,6 @@ Thumbs.db
 
 # Uploads directory
 frontend/public/uploads/
+
+# MongoDB memory server cache
+node_modules/.cache/
