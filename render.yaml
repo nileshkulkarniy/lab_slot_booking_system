@@ -7,3 +7,7 @@ services:
     envVars:
       - key: NODE_VERSION
         value: 22.16.0
+      - key: NPM_CONFIG_UNSAFE_PERM
+        value: "true"
+      - key: PYTHON
+        value: python3

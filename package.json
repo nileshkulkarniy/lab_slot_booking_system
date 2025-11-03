@@ -9,7 +9,8 @@
   "scripts": {
     "start": "node server.js",
     "campus-deploy": "node campus-deploy.js",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "install": "npm install --unsafe-perm"
   },
   "dependencies": {
     "axios": "^1.11.0",

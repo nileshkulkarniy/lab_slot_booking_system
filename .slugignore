@@ -1,2 +1,4 @@
+# Ignore bcrypt pre-built binaries to force rebuild on target platform
 node_modules/bcrypt/lib/binding/
 node_modules/bcrypt/build/
+node_modules/bcrypt/vendor/

@@ -103,7 +103,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Server Configuration
-PORT=5002
+PORT=5004
 NODE_ENV=development
 
 # Database Configuration
@@ -129,7 +129,7 @@ EMAIL_PASS=your_email_password
 npm start
 ```
 
-3. Open your browser and navigate to `http://localhost:5002`
+3. Open your browser and navigate to `http://localhost:5004`
 
 ## API Endpoints
 
