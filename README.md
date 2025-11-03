@@ -15,7 +15,13 @@ A comprehensive web application for managing laboratory slot bookings in educati
 - [Frontend Pages](#frontend-pages)
 - [Development](#development)
 - [Deployment](#deployment)
+  - [Production Environment](#production-environment)
+  - [Hosting Options](#hosting-options)
+  - [GitHub Deployment](#github-deployment)
+  - [Heroku Deployment](#heroku-deployment)
+  - [Vercel Deployment](#vercel-deployment)
 - [Contributing](#contributing)
+- [Author](#author)
 - [License](#license)
 
 ## Features
@@ -79,8 +85,8 @@ Lab Slot Booking System/
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
-cd lab-slot-booking-system
+git clone https://github.com/nileshkulkarniy/lab_slot_booking_system.git
+cd lab_slot_booking_system
 ```
 
 2. Install dependencies:
@@ -350,6 +356,3 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 **Note**: This system was designed for educational institutions to efficiently manage laboratory bookings and reduce administrative overhead.
-
-#   l a b _ s l o t _ b o o k i n g _ s y s t e m  
- 
