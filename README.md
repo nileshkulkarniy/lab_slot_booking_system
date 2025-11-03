@@ -103,7 +103,7 @@ Create a `.env` file in the root directory with the following variables:
 
 ```env
 # Server Configuration
-PORT=5002
+PORT=5004
 NODE_ENV=development
 
 # Database Configuration
