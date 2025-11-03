@@ -16,6 +16,7 @@ A comprehensive web application for managing laboratory slot bookings in educati
 - [Development](#development)
 - [Deployment](#deployment)
   - [Production Environment](#production-environment)
+  - [Bcrypt Deployment Issue Resolution](#bcrypt-deployment-issue-resolution)
   - [Hosting Options](#hosting-options)
   - [GitHub Deployment](#github-deployment)
   - [Heroku Deployment](#heroku-deployment)
@@ -256,6 +257,18 @@ npm start
 2. Configure your production MongoDB URI
 3. Set strong JWT secret
 4. Configure email service for password resets
+
+### Bcrypt Deployment Issue Resolution
+
+When deploying to cloud platforms like Render, you may encounter an `invalid ELF header` error with bcrypt. This happens because bcrypt contains platform-specific binaries that were compiled on your local machine (Windows) but are being executed on a different platform (Linux).
+
+To resolve this issue, we've implemented a postinstall script that automatically rebuilds bcrypt for the target platform during deployment. The solution includes:
+
+1. A postinstall script that runs during npm install
+2. Platform detection to only rebuild when deploying to production
+3. Automatic rebuilding of bcrypt binaries for the correct architecture
+
+This ensures that bcrypt works correctly across different deployment environments without manual intervention.
 
 ### Hosting Options
 
