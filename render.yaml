@@ -11,3 +11,8 @@ services:
         value: "true"
       - key: PYTHON
         value: python3
+      - key: NODE_ENV
+        value: production
+      # Add your MongoDB connection string here
+      # - key: MONGO_URI
+      #   value: mongodb+srv://username:password@cluster.mongodb.net/database_name

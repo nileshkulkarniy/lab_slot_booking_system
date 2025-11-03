@@ -18,7 +18,11 @@ const connectDB = async () => {
       console.log(`🔧 Connecting to MongoDB at ${mongoUri}`);
       
       // Connection options (removed deprecated options)
-      const options = {};
+      const options = {
+        // Add connection timeout options
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        socketTimeoutMS: 45000, // 45 seconds
+      };
       
       await mongoose.connect(mongoUri, options);
       console.log('✅ MongoDB connected successfully!');
@@ -30,7 +34,10 @@ const connectDB = async () => {
       const uri = mongod.getUri();
       
       // Connection options (removed deprecated options)
-      const options = {};
+      const options = {
+        serverSelectionTimeoutMS: 30000, // 30 seconds
+        socketTimeoutMS: 45000, // 45 seconds
+      };
       
       await mongoose.connect(uri, options);
       console.log('✅ In-memory MongoDB connected successfully!');
@@ -58,9 +65,17 @@ const connectDB = async () => {
     
   } catch (err) {
     console.error('❌ MongoDB connection failed:', err.message);
-    // Exit process with failure
-    process.exit(1);
+    // Don't exit process with failure in production, let the application handle it
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
   }
 };
 
+// Export a function to check if database is connected
+const isDBConnected = () => {
+  return mongoose.connection.readyState === 1; // 1 means connected
+};
+
 module.exports = connectDB;
+module.exports.isDBConnected = isDBConnected;

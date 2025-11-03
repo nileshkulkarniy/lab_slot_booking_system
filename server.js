@@ -33,6 +33,8 @@ app.use(express.static(path.join(__dirname, 'frontend/public')));
 // Connect to MongoDB
 connectDB().then(() => {
   console.log('🚀 Database connection established');
+  // Start the booking status update task only after database is connected
+  startBookingStatusUpdateTask();
 }).catch((err) => {
   console.error('❌ Failed to connect to database:', err.message);
   process.exit(1);
@@ -139,9 +141,6 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
-    
-    // Start the booking status update task
-    startBookingStatusUpdateTask();
   } catch (err) {
     console.error('❌ Failed to start server:', err.message);
     process.exit(1);
@@ -151,6 +150,12 @@ const startServer = async () => {
 // Function to update booking statuses based on slot completion times
 const startBookingStatusUpdateTask = () => {
   const updateBookingStatuses = async () => {
+    // Check if database is connected before running the task
+    if (!require('./config/db').isDBConnected()) {
+      console.log('⚠️ Database not connected, skipping booking status update');
+      return;
+    }
+    
     try {
       const Booking = require('./models/Booking');
       const Slot = require('./models/Slot');
@@ -183,50 +188,58 @@ const startBookingStatusUpdateTask = () => {
     }
   };
   
+  // Function to update slot statuses based on completion times
+  const updateSlotStatuses = async () => {
+    // Check if database is connected before running the task
+    if (!require('./config/db').isDBConnected()) {
+      console.log('⚠️ Database not connected, skipping slot status update');
+      return;
+    }
+    
+    try {
+      const Slot = require('./models/Slot');
+      
+      // Get current date and time
+      const now = new Date();
+      
+      // Find all active slots that are not already completed
+      const slotsToUpdate = await Slot.find({
+        isActive: true,
+        status: { $ne: 'completed' }
+      });
+      
+      let updatedCount = 0;
+      
+      for (const slot of slotsToUpdate) {
+        // Check if the slot time has passed
+        if (slot.hasPassedCompletionTime()) {
+          // Update the slot status to completed
+          slot.status = 'completed';
+          await slot.save();
+          updatedCount++;
+          console.log(`Updated slot ${slot._id} to completed`);
+        }
+      }
+      
+      if (updatedCount > 0) {
+        console.log(`✅ Updated ${updatedCount} slots to completed status`);
+      }
+    } catch (error) {
+      console.error('❌ Error updating slot statuses:', error);
+    }
+  };
+
   // Run the task immediately when the server starts
-  updateBookingStatuses();
-  updateSlotStatuses();
+  setTimeout(() => {
+    updateBookingStatuses();
+    updateSlotStatuses();
+  }, 5000); // Wait 5 seconds after DB connection to ensure models are loaded
   
   // Run the task every 30 minutes
   setInterval(() => {
     updateBookingStatuses();
     updateSlotStatuses();
   }, 30 * 60 * 1000);
-};
-
-// Function to update slot statuses based on completion times
-const updateSlotStatuses = async () => {
-  try {
-    const Slot = require('./models/Slot');
-    
-    // Get current date and time
-    const now = new Date();
-    
-    // Find all active slots that are not already completed
-    const slotsToUpdate = await Slot.find({
-      isActive: true,
-      status: { $ne: 'completed' }
-    });
-    
-    let updatedCount = 0;
-    
-    for (const slot of slotsToUpdate) {
-      // Check if the slot time has passed
-      if (slot.hasPassedCompletionTime()) {
-        // Update the slot status to completed
-        slot.status = 'completed';
-        await slot.save();
-        updatedCount++;
-        console.log(`Updated slot ${slot._id} to completed`);
-      }
-    }
-    
-    if (updatedCount > 0) {
-      console.log(`✅ Updated ${updatedCount} slots to completed status`);
-    }
-  } catch (error) {
-    console.error('❌ Error updating slot statuses:', error);
-  }
 };
 
 startServer();
