@@ -133,7 +133,7 @@ app.use('*', (req, res) => {
 });
 
 // --- Server Startup ---
-const PORT = process.env.PORT || 5004;
+const PORT = process.env.PORT || 5005;
 
 // Start server only after database connection is established
 const startServer = async () => {
