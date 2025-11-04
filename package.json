@@ -4,13 +4,12 @@
   "description": "",
   "main": "server.js",
   "engines": {
-    "node": "22.16.0"
+    "node": "22.x"
   },
   "scripts": {
     "start": "node server.js",
     "campus-deploy": "node campus-deploy.js",
-    "postinstall": "node scripts/postinstall.js",
-    "install": "npm install --unsafe-perm"
+    "postinstall": "node scripts/postinstall.js"
   },
   "dependencies": {
     "axios": "^1.11.0",
