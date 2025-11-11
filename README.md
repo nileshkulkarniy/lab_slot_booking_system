@@ -108,6 +108,8 @@ NODE_ENV=development
 
 # Database Configuration
 MONGO_URI=mongodb://localhost:27017/labslotbooking
+MONGO_URI=mongodb+srv://nileshyadav:A61OF8gyFOQj35gS@cluster0.9hbi5zn.mongodb.net/?appName=Cluster0
+
 
 # JWT Configuration
 JWT_SECRET=your_jwt_secret_key
